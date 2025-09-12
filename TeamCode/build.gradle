@@ -23,6 +23,14 @@ android {
     }
 }
 
+repositories {
+    maven { url = 'https://maven.pedropathing.com' } // Pedro
+    maven { url = 'https://mymaven.bylazar.com/releases' } // ArcRobotics Command based system
+    maven { url = 'https://maven.brott.dev/' } // AcmeRobotics dashboard
+}
+
 dependencies {
     implementation project(':FtcRobotController')
+    implementation 'org.ftclib.ftclib:core:2.1.1' // core
+    implementation 'com.acmerobotics.dashboard:dashboard:0.5.0' // AcmeRobotics dashboard
 }
