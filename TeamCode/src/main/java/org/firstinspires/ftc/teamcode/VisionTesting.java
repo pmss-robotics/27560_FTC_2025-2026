@@ -29,7 +29,7 @@ public class VisionTesting extends CommandOpMode {
         telemetry.log().setCapacity(8);
 
         // Add april tag stuff
-
+        tools = new GamepadEx(gamepad2);
 
         new GamepadButton(tools, GamepadKeys.Button.A).whenPressed(
                 new InstantCommand(() -> {
