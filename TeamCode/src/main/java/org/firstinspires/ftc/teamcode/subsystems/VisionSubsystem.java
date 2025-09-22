@@ -47,8 +47,8 @@ public class VisionSubsystem extends SubsystemBase {
         final CameraStreamProcessor dashboard = new CameraStreamProcessor();
 
         aprilTag = new AprilTagProcessor.Builder()
-                .setDrawAxes(false)
-                .setDrawCubeProjection(false)
+                .setDrawAxes(true)
+                .setDrawCubeProjection(true)
                 .setDrawTagOutline(true)
                 .setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
                 .setTagLibrary(AprilTagGameDatabase.getDecodeTagLibrary())

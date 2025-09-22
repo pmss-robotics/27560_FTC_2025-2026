@@ -28,17 +28,24 @@ public class VisionTesting extends CommandOpMode {
         telemetry.log().setDisplayOrder(Telemetry.Log.DisplayOrder.NEWEST_FIRST);
         telemetry.log().setCapacity(8);
 
+        try {
+            vision = new VisionSubsystem(hardwareMap,telemetry);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
         // Add april tag stuff
         tools = new GamepadEx(gamepad2);
 
         new GamepadButton(tools, GamepadKeys.Button.A).whenPressed(
                 new InstantCommand(() -> {
                     vision.enableDetection(true);
-
+                    telemetry.addData("Detecting?","true");
                 }));
         new GamepadButton(tools, GamepadKeys.Button.B).whenPressed(
                 new InstantCommand(() -> {
                     vision.enableDetection(false);
+                    telemetry.addData("Detecting?","false");
                 }));
     }
 
