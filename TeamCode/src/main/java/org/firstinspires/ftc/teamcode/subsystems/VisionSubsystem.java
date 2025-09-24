@@ -89,6 +89,7 @@ public class VisionSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         telemetryAprilTag();
+        telemetry.update();
     }
 
     public void enableDetection(boolean enabled) {
