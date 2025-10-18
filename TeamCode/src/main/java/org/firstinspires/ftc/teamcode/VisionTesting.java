@@ -41,11 +41,13 @@ public class VisionTesting extends CommandOpMode {
                 new InstantCommand(() -> {
                     vision.enableDetection(true);
                     telemetry.addData("Detecting?","true");
+                    telemetry.update();
                 }));
         new GamepadButton(tools, GamepadKeys.Button.B).whenPressed(
                 new InstantCommand(() -> {
                     vision.enableDetection(false);
                     telemetry.addData("Detecting?","false");
+                    telemetry.update();
                 }));
     }
 

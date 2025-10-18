@@ -57,7 +57,8 @@ public class VisionSubsystem extends SubsystemBase {
         VisionPortal.Builder builder = new VisionPortal.Builder();
 
         builder.setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"));
-
+        builder.enableLiveView(true);
+        builder.setAutoStopLiveView(true);
         builder.addProcessor(aprilTag);
 
         visionPortal = builder.build();
