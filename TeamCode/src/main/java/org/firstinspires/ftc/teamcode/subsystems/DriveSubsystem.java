@@ -8,15 +8,15 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.drive.PinpointDrive;
+import org.firstinspires.ftc.teamcode.drive.MecanumDrive;
 
 @Config
 public class DriveSubsystem extends SubsystemBase {
 
-    public final PinpointDrive drive;
+    public final MecanumDrive drive;
     private final Telemetry telemetry;
 
-    public DriveSubsystem(PinpointDrive drive, Telemetry telemetry) {
+    public DriveSubsystem(MecanumDrive drive, Telemetry telemetry) {
         this.drive = drive;
         this.telemetry = telemetry;
     }
@@ -28,7 +28,7 @@ public class DriveSubsystem extends SubsystemBase {
     public void fieldCentric(double lx, double ly, double rx) {
         // TODO verify if this works the inverse() might not be necessary
         setDrivePowers(new PoseVelocity2d(
-                drive.pose.heading.inverse().times(new Vector2d(ly, lx)),
+                drive.localizer.getPose().heading.inverse().times(new Vector2d(ly, lx)),
                 rx
         ));
         updatePoseEstimate();
@@ -61,6 +61,6 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public Pose2d getPose() {
-        return drive.pose;
+        return drive.localizer.getPose();
     }
 }
