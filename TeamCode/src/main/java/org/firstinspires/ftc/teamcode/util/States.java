@@ -15,4 +15,8 @@ public class States {
         specimen,
     }
 
+    public enum Flywheel {
+        stopped,
+        spinning
+    }
 }

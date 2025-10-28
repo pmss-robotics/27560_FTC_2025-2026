@@ -10,12 +10,13 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.drive.MecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystems.*;
 
+@com.qualcomm.robotcore.eventloop.opmode.TeleOp
 public class TeleOp extends CommandOpMode{
     GamepadEx driver1, driver2;
 
     DriveSubsystem drive;
 
-    OuttakeSubsystem outtakeSubsystem;
+    OuttakeSubsystem flywheel;
     @Override
     public void initialize(){
 
@@ -28,7 +29,7 @@ public class TeleOp extends CommandOpMode{
         driver2 = new GamepadEx(gamepad2);
         DriveSubsystem drive = new DriveSubsystem(new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0)), telemetry);
 
-
+        OuttakeSubsystem flywheel = new OuttakeSubsystem(hardwareMap, telemetry);
 
     }
 }
