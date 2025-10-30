@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
@@ -21,9 +22,18 @@ public class OuttakeSubsystem extends SubsystemBase {
         currentState = States.Flywheel.stopped;
 
         flywheel = hardwareMap.get(DcMotorEx.class, "flywheel");
+
+        flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
-    public void toggleState() {
+    public void setPower(double power) {
         // TODO: Set power based on state
+
+        flywheel.setPower(power);
+        if (power ==0) {
+            currentState = States.Flywheel.spinning;
+        } else {
+            currentState = States.Flywheel.stopped;
+        }
     }
 }

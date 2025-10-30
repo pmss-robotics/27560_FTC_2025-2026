@@ -14,35 +14,24 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.commands.DriveCommand;
 import org.firstinspires.ftc.teamcode.drive.MecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystems.*;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-@com.qualcomm.robotcore.eventloop.opmode.TeleOp
-public class TeleOp extends CommandOpMode{
+@TeleOp
+public class DriveOnly extends CommandOpMode{
     GamepadEx driver1, driver2;
 
-    DriveSubsystem drive;
-
-    IntakeSubsystem intake;
-    OuttakeSubsystem flywheel;
 
     public static double driveMult = 1;
 
     @Override
     public void initialize(){
 
-
-
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         telemetry.log().setDisplayOrder(Telemetry.Log.DisplayOrder.NEWEST_FIRST);
         telemetry.log().setCapacity(8);
         driver1 = new GamepadEx(gamepad1);
-        driver2 = new GamepadEx(gamepad2);
 
         DriveSubsystem drive = new DriveSubsystem(new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0)), telemetry);
-
-        IntakeSubsystem intake = new IntakeSubsystem(hardwareMap, telemetry);
-
-        OuttakeSubsystem flywheel = new OuttakeSubsystem(hardwareMap, telemetry);
-
 
         // Drive
         DriveCommand driveCommand = new DriveCommand(drive,
@@ -50,10 +39,6 @@ public class TeleOp extends CommandOpMode{
                 () -> driver1.getLeftY() * driveMult,
                 () -> -driver1.getRightX() * driveMult,
                 true);
-
-        //new GamepadButton(driver2, GamepadKeys.Button.A)
-        //      .whenReleased(new InstantCommand(flywheel::toggleState));
-
 
         schedule(driveCommand);
     }
