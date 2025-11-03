@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import static com.acmerobotics.roadrunner.Math.clamp;
+
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -29,7 +31,7 @@ public class OuttakeSubsystem extends SubsystemBase {
     public void setPower(double power) {
         // TODO: Set power based on state
 
-        flywheel.setPower(power);
+        flywheel.setPower(clamp(power,-1.0,1.0));
         if (power ==0) {
             currentState = States.Flywheel.spinning;
         } else {

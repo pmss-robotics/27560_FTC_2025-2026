@@ -53,7 +53,9 @@ public class TeleOp extends CommandOpMode{
 
         //new GamepadButton(driver2, GamepadKeys.Button.A)
         //      .whenReleased(new InstantCommand(flywheel::toggleState));
-
+        driver2.getGamepadButton(GamepadKeys.Button.A)
+                .whenPressed(()->flywheel.setPower(0))
+                .whenReleased(()->flywheel.setPower(1));
 
         schedule(driveCommand);
     }

@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.drive.MecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystems.*;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-@TeleOp
+@TeleOp(name = "DriveOnly", group = "TeleOp")
 public class DriveOnly extends CommandOpMode{
     GamepadEx driver1, driver2;
 
