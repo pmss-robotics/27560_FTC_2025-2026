@@ -6,6 +6,7 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.CommandOpMode;
+import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -31,9 +32,11 @@ public class LeaveAuto extends CommandOpMode {
                 .lineToX(-28)
                 .build();
 
-        Command trajectory = new ActionCommand(trajectoryAction, Stream.of(drive).collect(Collectors.toSet()));
 
-
+        SequentialCommandGroup routine = new SequentialCommandGroup(
+                new ActionCommand(trajectoryAction, Stream.of(drive).collect(Collectors.toSet()))
+        );
+        schedule(routine);
     }
     
 }
