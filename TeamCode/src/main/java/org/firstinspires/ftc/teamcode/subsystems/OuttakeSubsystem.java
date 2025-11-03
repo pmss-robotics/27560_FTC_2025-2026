@@ -16,7 +16,11 @@ public class OuttakeSubsystem extends SubsystemBase {
 
     private Telemetry telemetry;
 
-    private States.Flywheel currentState;
+    public States.Flywheel currentState;
+
+    private VoltageSensor voltageSensor;
+
+    private double speed;
 
     public OuttakeSubsystem(HardwareMap hardwareMap, Telemetry telemetry) {
         this.telemetry = telemetry;
@@ -26,16 +30,36 @@ public class OuttakeSubsystem extends SubsystemBase {
         flywheel = hardwareMap.get(DcMotorEx.class, "flywheel");
 
         flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        voltageSensor = hardwareMap.voltageSensor.iterator().next();
+
+        speed = 0;
+    }
+
+    public void toggleState() {
+        switch (currentState) {
+            case stopped:
+                speed = 11;
+            case spinning:
+                speed = 0;
+        }
+        setPower(speed);
+    }
+
+    public void holdSpeed() {
+        flywheel.setPower(clamp(speed/voltageSensor.getVoltage(),0,1));
     }
 
     public void setPower(double power) {
-        // TODO: Set power based on state
+        speed = power;
+        power /= voltageSensor.getVoltage();
 
         flywheel.setPower(clamp(power,-1.0,1.0));
-        if (power ==0) {
-            currentState = States.Flywheel.spinning;
-        } else {
+
+        if (power == 0) {
             currentState = States.Flywheel.stopped;
+        } else {
+            currentState = States.Flywheel.spinning;
         }
     }
 }

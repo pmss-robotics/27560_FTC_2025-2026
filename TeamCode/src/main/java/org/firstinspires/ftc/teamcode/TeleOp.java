@@ -14,6 +14,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.commands.DriveCommand;
 import org.firstinspires.ftc.teamcode.drive.MecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystems.*;
+import org.firstinspires.ftc.teamcode.util.States;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp
 public class TeleOp extends CommandOpMode{
@@ -44,6 +45,8 @@ public class TeleOp extends CommandOpMode{
         OuttakeSubsystem flywheel = new OuttakeSubsystem(hardwareMap, telemetry);
 
 
+        flywheel.setDefaultCommand(new RunCommand(flywheel::holdSpeed, flywheel));
+
         // Drive
         DriveCommand driveCommand = new DriveCommand(drive,
                 () -> -driver1.getLeftX() * driveMult,
@@ -51,11 +54,14 @@ public class TeleOp extends CommandOpMode{
                 () -> -driver1.getRightX() * driveMult,
                 true);
 
-        //new GamepadButton(driver2, GamepadKeys.Button.A)
-        //      .whenReleased(new InstantCommand(flywheel::toggleState));
+
+
+        // Flywheel Control
         driver2.getGamepadButton(GamepadKeys.Button.A)
-                .whenPressed(()->flywheel.setPower(0))
-                .whenReleased(()->flywheel.setPower(1));
+                .whenReleased(flywheel::toggleState);
+
+        // Intake Control
+        schedule(new InstantCommand(()->intake.setPower(driver2.getLeftY())));
 
         schedule(driveCommand);
     }

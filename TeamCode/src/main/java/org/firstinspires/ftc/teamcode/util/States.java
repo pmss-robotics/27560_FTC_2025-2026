@@ -19,4 +19,10 @@ public class States {
         stopped,
         spinning
     }
+
+    public enum Intake {
+        stopped,
+        feeding,
+        reverse
+    }
 }
