@@ -25,4 +25,9 @@ public class States {
         feeding,
         reverse
     }
+
+    public enum Alliance {
+        Red,
+        Blue
+    }
 }

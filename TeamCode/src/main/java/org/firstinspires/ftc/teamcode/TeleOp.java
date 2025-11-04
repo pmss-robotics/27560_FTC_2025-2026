@@ -38,11 +38,11 @@ public class TeleOp extends CommandOpMode{
         driver1 = new GamepadEx(gamepad1);
         driver2 = new GamepadEx(gamepad2);
 
-        DriveSubsystem drive = new DriveSubsystem(new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0)), telemetry);
+        drive = new DriveSubsystem(new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0)), telemetry);
 
-        IntakeSubsystem intake = new IntakeSubsystem(hardwareMap, telemetry);
+        intake = new IntakeSubsystem(hardwareMap, telemetry);
 
-        OuttakeSubsystem flywheel = new OuttakeSubsystem(hardwareMap, telemetry);
+        flywheel = new OuttakeSubsystem(hardwareMap, telemetry);
 
 
         flywheel.setDefaultCommand(new RunCommand(flywheel::holdSpeed, flywheel));
