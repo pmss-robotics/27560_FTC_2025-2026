@@ -37,6 +37,9 @@ public class LocalizationTest extends LinearOpMode {
                 telemetry.addData("x", pose.position.x);
                 telemetry.addData("y", pose.position.y);
                 telemetry.addData("heading (deg)", Math.toDegrees(pose.heading.toDouble()));
+                telemetry.addData("Gamepad LeftY", -gamepad1.left_stick_y);
+                telemetry.addData("Gamepad LeftX", -gamepad1.left_stick_x);
+                telemetry.addData("Gampepad RightX", -gamepad1.right_stick_x);
                 telemetry.update();
 
                 TelemetryPacket packet = new TelemetryPacket();
