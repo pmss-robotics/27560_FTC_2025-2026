@@ -46,6 +46,7 @@ public class TeleOp extends CommandOpMode{
 
 
         flywheel.setDefaultCommand(new RunCommand(flywheel::holdSpeed, flywheel));
+        intake.setDefaultCommand(new RunCommand(() ->intake.setPower(driver2.getLeftY()), intake));
 
         // Drive
         DriveCommand driveCommand = new DriveCommand(drive,
@@ -61,8 +62,6 @@ public class TeleOp extends CommandOpMode{
                 .whenReleased(flywheel::toggleState);
 
         // Intake Control
-        schedule(new InstantCommand(()->intake.setPower(driver2.getLeftY())));
-
         schedule(driveCommand);
     }
 }

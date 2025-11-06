@@ -40,8 +40,10 @@ public class OuttakeSubsystem extends SubsystemBase {
         switch (currentState) {
             case stopped:
                 speed = 11;
+                currentState = States.Flywheel.spinning;
             case spinning:
                 speed = 0;
+                currentState = States.Flywheel.stopped;
         }
         setPower(speed);
     }

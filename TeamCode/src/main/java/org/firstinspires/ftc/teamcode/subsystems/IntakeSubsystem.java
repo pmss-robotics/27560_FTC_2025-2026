@@ -51,7 +51,7 @@ public class IntakeSubsystem extends SubsystemBase {
     */
 
     public void setPower(double power) {
-        power/=2;
+        // power/=2;
         intakeMotor.setPower(clamp(power/voltageSensor.getVoltage(),-1,1));
     }
 }
