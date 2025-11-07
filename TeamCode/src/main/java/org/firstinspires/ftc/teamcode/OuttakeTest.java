@@ -44,5 +44,10 @@ public class OuttakeTest extends CommandOpMode{
         new GamepadButton(driver2, GamepadKeys.Button.B)
                 .whenReleased(new InstantCommand(() -> flywheel.setPower(0.0)));
 
+        new GamepadButton(driver2, GamepadKeys.Button.X)
+                .toggleWhenPressed(
+                        new InstantCommand(() -> flywheel.setPower(0.0)),
+                        new InstantCommand(() -> flywheel.setPower(12.0)));
+
     }
 }

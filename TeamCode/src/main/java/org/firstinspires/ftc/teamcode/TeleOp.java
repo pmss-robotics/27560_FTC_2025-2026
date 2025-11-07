@@ -46,7 +46,7 @@ public class TeleOp extends CommandOpMode{
 
 
         flywheel.setDefaultCommand(new RunCommand(flywheel::holdSpeed, flywheel));
-        intake.setDefaultCommand(new RunCommand(() ->intake.setPower(driver2.getLeftY()), intake));
+        intake.setDefaultCommand(new RunCommand(() ->intake.setPower(driver2.getLeftY()*12), intake));
 
         // Drive
         DriveCommand driveCommand = new DriveCommand(drive,
@@ -56,12 +56,13 @@ public class TeleOp extends CommandOpMode{
                 true);
 
 
-
         // Flywheel Control
-        driver2.getGamepadButton(GamepadKeys.Button.A)
-                .whenReleased(flywheel::toggleState);
+        new GamepadButton(driver2, GamepadKeys.Button.A)
+                .toggleWhenPressed(
+                        new InstantCommand(() -> flywheel.setPower(0.0)),
+                        new InstantCommand(() -> flywheel.setPower(12.0)));
 
-        // Intake Control
+        // Drive Command
         schedule(driveCommand);
     }
 }
