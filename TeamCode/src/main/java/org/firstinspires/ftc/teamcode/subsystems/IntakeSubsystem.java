@@ -53,5 +53,11 @@ public class IntakeSubsystem extends SubsystemBase {
     public void setPower(double power) {
         // power/=2;
         intakeMotor.setPower(clamp(power/voltageSensor.getVoltage(),-1,1));
+        telemetry.addData("intake power", power);
+    }
+
+    @Override
+    public void periodic() {
+        telemetry.update();
     }
 }

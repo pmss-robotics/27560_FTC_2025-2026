@@ -50,6 +50,7 @@ public class OuttakeSubsystem extends SubsystemBase {
 
     public void holdSpeed() {
         flywheel.setPower(clamp(speed/voltageSensor.getVoltage(),0,1));
+        telemetry.addData("flywheel power", speed);
     }
 
     public void setPower(double power) {
