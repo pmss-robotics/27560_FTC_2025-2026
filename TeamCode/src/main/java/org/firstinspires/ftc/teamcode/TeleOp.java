@@ -7,8 +7,10 @@ import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.RunCommand;
 import com.arcrobotics.ftclib.command.button.GamepadButton;
+import com.arcrobotics.ftclib.command.button.Trigger;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.arcrobotics.ftclib.gamepad.TriggerReader;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.commands.DriveCommand;
@@ -42,11 +44,11 @@ public class TeleOp extends CommandOpMode{
 
         intake = new IntakeSubsystem(hardwareMap, telemetry);
 
-        flywheel = new OuttakeSubsystem(hardwareMap, telemetry);
+        flywheel = new OuttakeSubsystem(hardwareMap, telemetry, /*TODO: once kicker is built change to true*/ false);
 
 
         flywheel.setDefaultCommand(new RunCommand(flywheel::holdSpeed, flywheel));
-        intake.setDefaultCommand(new RunCommand(() ->intake.setPower(driver2.getLeftY()*12), intake));
+        intake.setDefaultCommand(new RunCommand(() ->intake.setPower(driver2.getLeftY()), intake));
 
         // Drive
         DriveCommand driveCommand = new DriveCommand(drive,
@@ -60,7 +62,16 @@ public class TeleOp extends CommandOpMode{
         new GamepadButton(driver2, GamepadKeys.Button.A)
                 .toggleWhenPressed(
                         new InstantCommand(() -> flywheel.setPower(0.0)),
-                        new InstantCommand(() -> flywheel.setPower(12.0)));
+                        new InstantCommand(() -> flywheel.setPower(OuttakeSubsystem.flywheelVelocity)));
+
+        // Kicker Control
+
+        /* TODO: Un-comment this section to allow kicker controls
+        new GamepadButton(driver2, GamepadKeys.Button.B)
+                .toggleWhenPressed(flywheel::kick, flywheel::home);
+        */
+
+
 
         // Drive Command
         schedule(driveCommand);
