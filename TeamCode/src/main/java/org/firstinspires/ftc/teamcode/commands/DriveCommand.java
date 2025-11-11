@@ -27,7 +27,7 @@ public class DriveCommand extends CommandBase {
         if(isFieldCentric) {
             drive.fieldCentric(lx.getAsDouble(), ly.getAsDouble(), rx.getAsDouble());
         } else {
-            drive.robotCentric(lx.getAsDouble(), ly.getAsDouble(), rx.getAsDouble());
+            // drive.robotCentric(lx.getAsDouble(), ly.getAsDouble(), rx.getAsDouble());
         }
     }
 }

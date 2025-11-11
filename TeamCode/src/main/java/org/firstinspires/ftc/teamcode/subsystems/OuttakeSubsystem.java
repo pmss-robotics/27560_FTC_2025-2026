@@ -2,48 +2,77 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import static com.acmerobotics.roadrunner.Math.clamp;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SubsystemBase;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.PwmControl;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.util.States;
 
+@Config
 public class OuttakeSubsystem extends SubsystemBase {
     private DcMotorEx flywheel;
-
+    private ServoImplEx leftKicker, rightKicker;
     private Telemetry telemetry;
-
-    public States.Flywheel currentState;
-
     private VoltageSensor voltageSensor;
 
+    public States.Flywheel flywheelState;
+    public States.Kicker kickerState;
+
+    public static double flywheelVelocity = 12;
+
+    public static double kHome = 10, kKick = 250;
     private double speed;
+    private double kTarget;
 
-    public OuttakeSubsystem(HardwareMap hardwareMap, Telemetry telemetry) {
+    public OuttakeSubsystem(HardwareMap hardwareMap, Telemetry telemetry, boolean useKicker) {
         this.telemetry = telemetry;
-
-        currentState = States.Flywheel.stopped;
 
         flywheel = hardwareMap.get(DcMotorEx.class, "flywheel");
 
-        flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
+        if (useKicker) {
+            leftKicker = hardwareMap.get(ServoImplEx.class, "leftKicker");
+            rightKicker = hardwareMap.get(ServoImplEx.class, "rightKicker");
+        }
+
+        flywheel.setDirection(DcMotorEx.Direction.FORWARD);
 
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
+
+        flywheelState = States.Flywheel.stopped;
+        kickerState = States.Kicker.home;
+
+        if (useKicker) {
+            leftKicker.setPwmRange(new PwmControl.PwmRange(500, 2500));
+            rightKicker.setPwmRange(new PwmControl.PwmRange(500, 2500));
+
+            kTarget = kHome;
+            leftKicker.setPosition(scale(kTarget));
+            rightKicker.setPosition(scale(kTarget));
+        }
 
         speed = 0;
     }
 
-    public void toggleState() {
-        switch (currentState) {
+
+    public void toggleFlywheelState() {
+        switch (flywheelState) {
             case stopped:
-                speed = 11;
-                currentState = States.Flywheel.spinning;
+                speed = flywheelVelocity;
+                flywheelState = States.Flywheel.spinning;
+                break;
             case spinning:
                 speed = 0;
-                currentState = States.Flywheel.stopped;
+                flywheelState = States.Flywheel.stopped;
+                break;
         }
         setPower(speed);
     }
@@ -60,9 +89,28 @@ public class OuttakeSubsystem extends SubsystemBase {
         flywheel.setPower(clamp(power,-1.0,1.0));
 
         if (power == 0) {
-            currentState = States.Flywheel.stopped;
+            flywheelState = States.Flywheel.stopped;
         } else {
-            currentState = States.Flywheel.spinning;
+            flywheelState = States.Flywheel.spinning;
         }
+    }
+
+    public void kick() {
+        kTarget = kKick;
+
+        leftKicker.setPosition(scale(kTarget));
+        rightKicker.setPosition(scale(kTarget));
+    }
+
+    public void home() {
+        kTarget = kHome;
+
+        leftKicker.setPosition(scale(kTarget));
+        rightKicker.setPosition(scale(kTarget));
+    }
+
+    private double scale(double angle){
+        // angle in degrees
+        return Range.scale(angle, 0, 300, 0, 1);
     }
 }
