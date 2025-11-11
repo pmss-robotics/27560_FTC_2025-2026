@@ -35,7 +35,7 @@ public class OuttakeTest extends CommandOpMode{
         driver1 = new GamepadEx(gamepad1);
         driver2 = new GamepadEx(gamepad2);
 
-        OuttakeSubsystem flywheel = new OuttakeSubsystem(hardwareMap, telemetry);
+        OuttakeSubsystem flywheel = new OuttakeSubsystem(hardwareMap, telemetry, false);
 
 
         new GamepadButton(driver2, GamepadKeys.Button.A)
