@@ -66,11 +66,12 @@ public class TeleOp extends CommandOpMode{
 
         // Kicker Control
 
-        /* TODO: Un-comment this section to allow kicker controls
+        /* // TODO: Un-comment this section to allow kicker controls
         new GamepadButton(driver2, GamepadKeys.Button.B)
                 .toggleWhenPressed(flywheel::kick, flywheel::home);
         */
 
+        // TODO: Turn to based on dpad
 
 
         // Drive Command

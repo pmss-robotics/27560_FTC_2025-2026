@@ -16,6 +16,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.commands.ActionCommand;
 import org.firstinspires.ftc.teamcode.drive.MecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
+import org.firstinspires.ftc.teamcode.util.StateTransfer;
 import org.firstinspires.ftc.teamcode.util.States;
 
 import java.util.stream.Collectors;
@@ -38,10 +39,10 @@ public class LeaveAuto extends CommandOpMode {
     }
 
     private void onPromptsComplete() {
-        States.Alliance alliance = prompter.get("alliance");
+        StateTransfer.alliance = prompter.get("alliance");
         Pose2d startPose;
 
-        if (alliance.equals(States.Alliance.Red)) {
+        if (StateTransfer.alliance.equals(States.Alliance.Red)) {
             startPose = new Pose2d(-40, 54, 0);
         } else { // Blue
             startPose = new Pose2d(-40, -54, 0);
