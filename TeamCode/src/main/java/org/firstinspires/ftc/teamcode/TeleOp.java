@@ -61,8 +61,8 @@ public class TeleOp extends CommandOpMode{
         // Flywheel Control
         new GamepadButton(driver2, GamepadKeys.Button.A)
                 .toggleWhenPressed(
-                        new InstantCommand(() -> flywheel.setPower(0.0)),
-                        new InstantCommand(() -> flywheel.setPower(OuttakeSubsystem.flywheelVelocity)));
+                        new InstantCommand(() -> flywheel.setPower(0.0), flywheel),
+                        new InstantCommand(() -> flywheel.setPower(OuttakeSubsystem.flywheelVelocity), flywheel));
 
         // Kicker Control
 

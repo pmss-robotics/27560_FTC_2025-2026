@@ -23,7 +23,7 @@ public class MeepMeepTesting {
                 .lineToX(-28)
                 .build());
 
-        meepMeep.setBackground(MeepMeep.Background.FIELD_DECODE_OFFICIAL)
+        meepMeep.setBackground(MeepMeep.Background.FIELD_DECODE_JUICE_BLACK)
                 .setDarkMode(true)
                 .setBackgroundAlpha(0.95f)
                 .addEntity(myBot)
