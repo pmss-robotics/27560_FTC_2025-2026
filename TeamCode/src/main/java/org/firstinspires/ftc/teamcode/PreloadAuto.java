@@ -66,7 +66,7 @@ public class PreloadAuto extends CommandOpMode {
 
         } else { // Blue
             startPose = new Pose2d(-40, -54, Math.toRadians(180));
-            shootingSpot = new Pose2d(-29,-29, Math.toRadians(215));
+            shootingSpot = new Pose2d(-29,-29, Math.toRadians(225));
             parkingSpot = new Pose2d(-10,-29, Math.toRadians(270));
         }
 

@@ -44,7 +44,7 @@ public class MeepMeepTesting {
 
         myBlueBot.runAction(myBlueBot.getDrive().actionBuilder(bluePose)
                 .strafeTo(new Vector2d(-29, -29))
-                .turnTo(Math.toRadians(215))
+                .turnTo(Math.toRadians(225))
                 // Between here launch 3 balls
                 .turnTo(Math.toRadians(270))
                 .strafeTo(new Vector2d(-10,-29))
