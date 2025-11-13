@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -22,8 +23,8 @@ import org.firstinspires.ftc.teamcode.util.States;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Autonomous(name = "LeaveAuto", group = "Auto")
-public class LeaveAuto extends CommandOpMode {
+@Autonomous(name = "PreloadAuto", group = "Auto")
+public class PreloadAuto extends CommandOpMode {
 
     DriveSubsystem drive;
     private Prompter prompter = new Prompter(this);
@@ -50,11 +51,12 @@ public class LeaveAuto extends CommandOpMode {
 
         drive = new DriveSubsystem(new MecanumDrive(hardwareMap, startPose), telemetry);
 
-        Action trajectoryAction = drive.actionBuilder(drive.getPose())
-                .lineToX(-28)
+        Action toShootingSpot = drive.actionBuilder(drive.getPose())
+                .strafeTo(new Vector2d(-29,29))
+                .turn(Math.toRadians(-45))
                 .build();
 
-        Command trajectory = new ActionCommand(trajectoryAction, Stream.of(drive).collect(Collectors.toSet()));
+        Command trajectory = new ActionCommand(toShootingSpot, Stream.of(drive).collect(Collectors.toSet()));
 
         schedule(trajectory);
     }
