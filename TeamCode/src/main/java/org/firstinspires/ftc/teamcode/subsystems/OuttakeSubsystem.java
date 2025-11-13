@@ -55,7 +55,7 @@ public class OuttakeSubsystem extends SubsystemBase {
             rightKicker.setPwmRange(new PwmControl.PwmRange(500, 2500));
 
             kTarget = kHome;
-            leftKicker.setPosition(scale(kTarget));
+            leftKicker.setPosition(1-scale(kTarget));
             rightKicker.setPosition(scale(kTarget));
         }
 
@@ -98,14 +98,14 @@ public class OuttakeSubsystem extends SubsystemBase {
     public void kick() {
         kTarget = kKick;
 
-        leftKicker.setPosition(scale(kTarget));
+        leftKicker.setPosition(1-scale(kTarget));
         rightKicker.setPosition(scale(kTarget));
     }
 
     public void home() {
         kTarget = kHome;
 
-        leftKicker.setPosition(scale(kTarget));
+        leftKicker.setPosition(1-scale(kTarget));
         rightKicker.setPosition(scale(kTarget));
     }
 
