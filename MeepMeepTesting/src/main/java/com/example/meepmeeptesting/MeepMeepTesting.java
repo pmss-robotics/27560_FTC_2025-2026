@@ -29,7 +29,7 @@ public class MeepMeepTesting {
                 .turnTo(Math.toRadians(135))
                 // Between here launch 3 balls
                 .turnTo(Math.toRadians(90))
-                .strafeTo(new Vector2d(-12,29))
+                .strafeTo(new Vector2d(-10,29))
                 .build());
 
         // Blue Auto
@@ -47,7 +47,7 @@ public class MeepMeepTesting {
                 .turnTo(Math.toRadians(215))
                 // Between here launch 3 balls
                 .turnTo(Math.toRadians(270))
-                .strafeTo(new Vector2d(-12,-29))
+                .strafeTo(new Vector2d(-10,-29))
                 .build());
 
         meepMeep.setBackground(MeepMeep.Background.FIELD_DECODE_JUICE_BLACK)

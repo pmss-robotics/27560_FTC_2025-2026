@@ -44,14 +44,15 @@ public class IntakeSubsystem extends SubsystemBase {
                 speed = -12;
         }
     }
-
-    public void holdSpeed() {
-        intakeMotor.setPower(speed);
-    }
     */
+    public void holdSpeed() {
+        intakeMotor.setPower(clamp(speed/voltageSensor.getVoltage(),-1,1));
+    }
+
 
     public void setPower(double power) {
         //power/=2;
+        speed = power;
         intakeMotor.setPower(clamp(power/voltageSensor.getVoltage(),-1,1));
         telemetry.addData("intake power", power);
     }

@@ -8,6 +8,7 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.InstantCommand;
+import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.RunCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.Subsystem;
@@ -35,6 +36,7 @@ public class PreloadAuto extends CommandOpMode {
 
     DriveSubsystem drive;
     OuttakeSubsystem flywheel;
+    IntakeSubsystem intake;
     private Prompter prompter = new Prompter(this);
 
     @Override
@@ -42,6 +44,9 @@ public class PreloadAuto extends CommandOpMode {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         telemetry.log().setDisplayOrder(Telemetry.Log.DisplayOrder.NEWEST_FIRST);
         telemetry.log().setCapacity(8);
+
+        flywheel = new OuttakeSubsystem(hardwareMap, telemetry, true);
+        intake = new IntakeSubsystem(hardwareMap, telemetry);
 
         prompter.prompt("alliance", new OptionPrompt<>("Select Alliance", States.Alliance.Red, States.Alliance.Blue))
                 .onComplete(this::onPromptsComplete);
@@ -57,16 +62,15 @@ public class PreloadAuto extends CommandOpMode {
         if (StateTransfer.alliance.equals(States.Alliance.Red)) {
             startPose = new Pose2d(-40, 54, Math.toRadians(180));
             shootingSpot = new Pose2d(-29, 29, Math.toRadians(135));
-            parkingSpot = new Pose2d(-12,29, Math.toRadians(90));
+            parkingSpot = new Pose2d(-10,29, Math.toRadians(90));
 
         } else { // Blue
             startPose = new Pose2d(-40, -54, Math.toRadians(180));
             shootingSpot = new Pose2d(-29,-29, Math.toRadians(215));
-            parkingSpot = new Pose2d(-12,-29, Math.toRadians(270));
+            parkingSpot = new Pose2d(-10,-29, Math.toRadians(270));
         }
 
         drive = new DriveSubsystem(new MecanumDrive(hardwareMap, startPose), telemetry);
-        flywheel = new OuttakeSubsystem(hardwareMap, telemetry, true);
 
         Action toShootingSpot = drive.actionBuilder(drive.getPose())
                 .strafeTo(shootingSpot.position)
@@ -78,18 +82,35 @@ public class PreloadAuto extends CommandOpMode {
                 .strafeTo(parkingSpot.position)
                 .build();
 
-        // Make this to a sequential command
-        Command trajectory = new ActionCommand(toShootingSpot, Stream.of(drive).collect(Collectors.toSet()));
 
         flywheel.setDefaultCommand(new RunCommand(flywheel::holdSpeed));
+        intake.setDefaultCommand(new RunCommand(intake::holdSpeed));
 
         SequentialCommandGroup routine = new SequentialCommandGroup(
+
+                // Drive from starting pose to shooting spot
                 new ActionCommand(toShootingSpot, Stream.of(drive).collect(Collectors.toSet())),
-                new InstantCommand(() -> flywheel.setPower(12), flywheel),
-                new WaitCommand(1000)
 
+                // Turn on flywheel and spin up for 1 second
+                new InstantCommand(() -> flywheel.setPower(12), flywheel).andThen(new WaitCommand(2000)),
 
+                // Turn on intake and feed through flywheel for 5 seconds
+                new InstantCommand(() -> intake.setPower(12), intake).andThen(new WaitCommand(5000)),
+
+                // Kick, and wait to launch
+                new InstantCommand(() -> flywheel.kick()).andThen(new WaitCommand(1500)),
+
+                // Turn off Shooting mechanisms
+                new ParallelCommandGroup(
+                        new InstantCommand(() -> flywheel.home()),
+                        new InstantCommand(() -> flywheel.setPower(12), flywheel),
+                        new InstantCommand(() -> intake.setPower(0), intake)
+                ),
+
+                // Go park
+                new ActionCommand(toPark, Stream.of(drive).collect(Collectors.toSet()))
         );
-        schedule(trajectory);
+
+        schedule(routine);
     }
 }

@@ -29,7 +29,7 @@ public class OuttakeSubsystem extends SubsystemBase {
 
     public static double flywheelVelocity = 12;
 
-    public static double kHome = 10, kKick = 250;
+    public static double kHome = 250, kKick = 10;
     private double speed;
     private double kTarget;
 
