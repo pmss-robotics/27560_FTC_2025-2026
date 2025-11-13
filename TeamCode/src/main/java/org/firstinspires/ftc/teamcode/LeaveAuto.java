@@ -36,6 +36,7 @@ public class LeaveAuto extends CommandOpMode {
 
         prompter.prompt("alliance", new OptionPrompt<>("Select Alliance", States.Alliance.Red, States.Alliance.Blue))
                 .onComplete(this::onPromptsComplete);
+
     }
 
     private void onPromptsComplete() {

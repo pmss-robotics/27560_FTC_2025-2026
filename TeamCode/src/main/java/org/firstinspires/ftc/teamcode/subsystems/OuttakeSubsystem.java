@@ -29,7 +29,7 @@ public class OuttakeSubsystem extends SubsystemBase {
 
     public static double flywheelVelocity = 12;
 
-    public static double kHome = 250, kKick = 10;
+    public static double lHome = 210, lKick = 100, rHome = 45, rKick = 155;
     private double speed;
     private double kTarget;
 
@@ -54,9 +54,8 @@ public class OuttakeSubsystem extends SubsystemBase {
             leftKicker.setPwmRange(new PwmControl.PwmRange(500, 2500));
             rightKicker.setPwmRange(new PwmControl.PwmRange(500, 2500));
 
-            kTarget = kHome;
-            leftKicker.setPosition(1-scale(kTarget));
-            rightKicker.setPosition(scale(kTarget));
+            leftKicker.setPosition(scale(lHome));
+            rightKicker.setPosition(scale(rHome));
         }
 
         speed = 0;
@@ -96,17 +95,13 @@ public class OuttakeSubsystem extends SubsystemBase {
     }
 
     public void kick() {
-        kTarget = kKick;
-
-        leftKicker.setPosition(1-scale(kTarget));
-        rightKicker.setPosition(scale(kTarget));
+        leftKicker.setPosition(scale(lKick));
+        rightKicker.setPosition(scale(rKick));
     }
 
     public void home() {
-        kTarget = kHome;
-
-        leftKicker.setPosition(1-scale(kTarget));
-        rightKicker.setPosition(scale(kTarget));
+        leftKicker.setPosition(scale(lHome));
+        rightKicker.setPosition(scale(rHome));
     }
 
     private double scale(double angle){
