@@ -43,7 +43,7 @@ public class OuttakeSubsystem extends SubsystemBase {
             rightKicker = hardwareMap.get(ServoImplEx.class, "rightKicker");
         }
 
-        flywheel.setDirection(DcMotorEx.Direction.FORWARD);
+        flywheel.setDirection(DcMotorEx.Direction.REVERSE);
 
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
@@ -59,7 +59,6 @@ public class OuttakeSubsystem extends SubsystemBase {
             rightKicker.setPosition(scale(kTarget));
         }
 
-        speed = 0;
     }
 
 

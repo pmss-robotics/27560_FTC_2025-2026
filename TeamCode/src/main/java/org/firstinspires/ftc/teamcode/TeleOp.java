@@ -25,7 +25,7 @@ public class TeleOp extends CommandOpMode{
     DriveSubsystem drive;
 
     IntakeSubsystem intake;
-    OuttakeSubsystem flywheel;
+    OuttakeSubsystem outtake;
 
     public static double driveMult = 1;
 
@@ -44,10 +44,10 @@ public class TeleOp extends CommandOpMode{
 
         intake = new IntakeSubsystem(hardwareMap, telemetry);
 
-        flywheel = new OuttakeSubsystem(hardwareMap, telemetry, /*TODO: once kicker is built change to true*/ true);
+        outtake = new OuttakeSubsystem(hardwareMap, telemetry, /*TODO: once kicker is built change to true*/ true);
 
 
-        flywheel.setDefaultCommand(new RunCommand(flywheel::holdSpeed, flywheel));
+        outtake.setDefaultCommand(new RunCommand(outtake::holdSpeed, outtake));
         intake.setDefaultCommand(new RunCommand(() ->intake.setPower(driver2.getLeftY()*12), intake));
 
         // Drive
@@ -61,14 +61,14 @@ public class TeleOp extends CommandOpMode{
         // Flywheel Control
         new GamepadButton(driver2, GamepadKeys.Button.A)
                 .toggleWhenPressed(
-                        new InstantCommand(() -> flywheel.setPower(0.0)),
-                        new InstantCommand(() -> flywheel.setPower(OuttakeSubsystem.flywheelVelocity)));
+                        new InstantCommand(() -> outtake.setPower(0.0)),
+                        new InstantCommand(() -> outtake.setPower(OuttakeSubsystem.flywheelVelocity)));
 
         // Kicker Control
 
         // TODO: Un-comment this section to allow kicker controls
         new GamepadButton(driver2, GamepadKeys.Button.B)
-                .toggleWhenPressed(flywheel::kick, flywheel::home);
+                .toggleWhenPressed(outtake::kick, outtake::home);
 
 
 
