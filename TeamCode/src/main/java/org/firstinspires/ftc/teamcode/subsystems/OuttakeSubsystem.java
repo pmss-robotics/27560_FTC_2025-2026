@@ -47,7 +47,7 @@ public class OuttakeSubsystem extends SubsystemBase {
             rightKicker = hardwareMap.get(ServoImplEx.class, "rightKicker");
         }
 
-        flywheel.setDirection(DcMotorEx.Direction.FORWARD);
+        flywheel.setDirection(DcMotorEx.Direction.REVERSE);
         flywheel.setCurrentAlert(4, CurrentUnit.AMPS);
         stallTimer = new StallTimer(flywheelStallTimeout, ElapsedTime.Resolution.MILLISECONDS);
 
