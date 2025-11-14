@@ -62,16 +62,20 @@ public class LeaveAuto extends CommandOpMode {
             // Run any other continuous robot logic here.
         }
         reset();
+        StateTransfer.pose = drive.getPose();
     }
 
     private void onPromptsComplete() {
         StateTransfer.alliance = prompter.get("alliance");
         Pose2d startPose;
+        Pose2d parkingSpot;
 
         if (StateTransfer.alliance.equals(States.Alliance.Red)) {
             startPose = new Pose2d(-40, 54, 0);
+            parkingSpot = new Pose2d(-28, 54,0);
         } else { // Blue
-            startPose = new Pose2d(-40, -54, 0);
+            startPose = new Pose2d(40, 54, Math.toRadians(180));
+            parkingSpot = new Pose2d(28, 54, Math.toRadians(180));
         }
 
         drive = new DriveSubsystem(new MecanumDrive(hardwareMap, startPose), telemetry);
