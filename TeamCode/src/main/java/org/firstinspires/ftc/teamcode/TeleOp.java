@@ -6,6 +6,8 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.RunCommand;
+import com.arcrobotics.ftclib.command.SequentialCommandGroup;
+import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.command.button.GamepadButton;
 import com.arcrobotics.ftclib.command.button.Trigger;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
@@ -67,8 +69,17 @@ public class TeleOp extends CommandOpMode{
         // Kicker Control
 
         // TODO: Un-comment this section to allow kicker controls
+        /*
         new GamepadButton(driver2, GamepadKeys.Button.B)
-                .toggleWhenPressed(outtake::kick, outtake::home);
+                .toggleWhenPressed(outtake::kick, outtake::home);*/
+
+        new GamepadButton(driver2, GamepadKeys.Button.B)
+                .whenPressed(
+                        new SequentialCommandGroup(
+                                new InstantCommand(() -> outtake.kick()),
+                                new WaitCommand(200),
+                                new InstantCommand(() -> outtake.home())
+                        ));
 
 
 
