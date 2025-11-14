@@ -26,13 +26,15 @@ import java.util.stream.Stream;
 public class LeaveAuto extends CommandOpMode {
 
     DriveSubsystem drive;
-    private Prompter prompter = new Prompter(this);
+    private Prompter prompter;
 
     @Override
     public void initialize() {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         telemetry.log().setDisplayOrder(Telemetry.Log.DisplayOrder.NEWEST_FIRST);
         telemetry.log().setCapacity(8);
+
+        prompter = new Prompter(this);
 
         prompter.prompt("alliance", new OptionPrompt<>("Select Alliance", States.Alliance.Red, States.Alliance.Blue))
                 .onComplete(this::onPromptsComplete);

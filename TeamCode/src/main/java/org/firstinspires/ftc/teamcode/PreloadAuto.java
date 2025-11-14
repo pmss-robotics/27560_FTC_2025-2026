@@ -37,13 +37,15 @@ public class PreloadAuto extends CommandOpMode {
     DriveSubsystem drive;
     OuttakeSubsystem flywheel;
     IntakeSubsystem intake;
-    private Prompter prompter = new Prompter(this);
+    private Prompter prompter;
 
     @Override
     public void initialize() {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         telemetry.log().setDisplayOrder(Telemetry.Log.DisplayOrder.NEWEST_FIRST);
         telemetry.log().setCapacity(8);
+
+        prompter = new Prompter(this);
 
         flywheel = new OuttakeSubsystem(hardwareMap, telemetry, true);
         intake = new IntakeSubsystem(hardwareMap, telemetry);
