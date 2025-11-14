@@ -74,6 +74,9 @@ public class TeleOp extends CommandOpMode{
                         new InstantCommand(() -> outtake.setPower(0.0)),
                         new InstantCommand(() -> outtake.setPower(OuttakeSubsystem.flywheelVelocity)));
 
+        new GamepadButton(driver2, GamepadKeys.Button.DPAD_UP)
+                .whenPressed(new InstantCommand(outtake::resetMotor));
+
         // Kicker Control
         new GamepadButton(driver2, GamepadKeys.Button.B)
                 .whenPressed(

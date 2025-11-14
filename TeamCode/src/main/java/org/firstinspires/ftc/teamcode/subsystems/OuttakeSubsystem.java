@@ -12,9 +12,12 @@ import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
+import org.firstinspires.ftc.teamcode.util.StallTimer;
 import org.firstinspires.ftc.teamcode.util.States;
 
 @Config
@@ -27,11 +30,12 @@ public class OuttakeSubsystem extends SubsystemBase {
     public States.Flywheel flywheelState;
     public States.Kicker kickerState;
 
-    public static double flywheelVelocity = 12;
+    public static double flywheelVelocity = 12, flywheelMaxCurrent = 7, flywheelStallTimeout = 3000;
 
     public static double lHome = 210, lKick = 100, rHome = 45, rKick = 155;
     private double speed;
     private double kTarget;
+    private StallTimer stallTimer;
 
     public OuttakeSubsystem(HardwareMap hardwareMap, Telemetry telemetry, boolean useKicker) {
         this.telemetry = telemetry;
@@ -44,6 +48,8 @@ public class OuttakeSubsystem extends SubsystemBase {
         }
 
         flywheel.setDirection(DcMotorEx.Direction.FORWARD);
+        flywheel.setCurrentAlert(4, CurrentUnit.AMPS);
+        stallTimer = new StallTimer(flywheelStallTimeout, ElapsedTime.Resolution.MILLISECONDS);
 
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
@@ -77,7 +83,15 @@ public class OuttakeSubsystem extends SubsystemBase {
 
     public void holdSpeed() {
         flywheel.setPower(clamp(speed/voltageSensor.getVoltage(),0,1));
-        telemetry.addData("flywheel power", speed);
+        if (flywheel.isOverCurrent()) stallTimer.stalling();
+        else stallTimer.motorOn();
+
+        if (stallTimer.shutOff()) flywheel.setMotorDisable();
+
+        telemetry.addData("flywheel voltage", speed);
+        // telemetry.addData("flywheel current", flywheel.getCurrent(CurrentUnit.AMPS));
+        telemetry.addData("flywheel stall", !flywheel.isMotorEnabled());
+
     }
 
     public void setPower(double power) {
@@ -101,6 +115,12 @@ public class OuttakeSubsystem extends SubsystemBase {
     public void home() {
         leftKicker.setPosition(scale(lHome));
         rightKicker.setPosition(scale(rHome));
+    }
+
+    public void resetMotor() {
+        speed = 0;
+        stallTimer.motorOn();
+        flywheel.setMotorEnable();
     }
 
     private double scale(double angle){
