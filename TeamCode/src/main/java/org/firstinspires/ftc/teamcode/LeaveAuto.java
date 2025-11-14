@@ -39,6 +39,29 @@ public class LeaveAuto extends CommandOpMode {
         prompter.prompt("alliance", new OptionPrompt<>("Select Alliance", States.Alliance.Red, States.Alliance.Blue))
                 .onComplete(this::onPromptsComplete);
 
+
+        prompter.run();
+    }
+
+    @Override
+    public void runOpMode() throws InterruptedException {
+        // Initialize the robot and prompter
+        initialize();
+
+        while (!isStarted()) {
+            prompter.run();
+        }
+
+        waitForStart();
+
+        while (opModeIsActive() && !isStopRequested()) {
+            // This is the main loop where the command scheduler runs.
+            // prompter.run() should be placed inside this loop.c
+            run();
+
+            // Run any other continuous robot logic here.
+        }
+        reset();
     }
 
     private void onPromptsComplete() {

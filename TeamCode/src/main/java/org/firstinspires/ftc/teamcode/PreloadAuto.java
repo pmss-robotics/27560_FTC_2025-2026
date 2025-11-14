@@ -52,8 +52,28 @@ public class PreloadAuto extends CommandOpMode {
 
         prompter.prompt("alliance", new OptionPrompt<>("Select Alliance", States.Alliance.Red, States.Alliance.Blue))
                 .onComplete(this::onPromptsComplete);
+        prompter.run();
     }
+    @Override
+    public void runOpMode() throws InterruptedException {
+        // Initialize the robot and prompter
+        initialize();
 
+        while (!isStarted()) {
+            prompter.run();
+        }
+
+        waitForStart();
+
+        while (opModeIsActive() && !isStopRequested()) {
+            // This is the main loop where the command scheduler runs.
+            // prompter.run() should be placed inside this loop.c
+            run();
+
+            // Run any other continuous robot logic here.
+        }
+        reset();
+    }
     private void onPromptsComplete() {
         StateTransfer.alliance = prompter.get("alliance");
 
@@ -85,8 +105,8 @@ public class PreloadAuto extends CommandOpMode {
                 .build();
 
 
-        flywheel.setDefaultCommand(new RunCommand(flywheel::holdSpeed));
-        intake.setDefaultCommand(new RunCommand(intake::holdSpeed));
+        flywheel.setDefaultCommand(new RunCommand(flywheel::holdSpeed, flywheel));
+        intake.setDefaultCommand(new RunCommand(intake::holdSpeed, intake));
 
         SequentialCommandGroup routine = new SequentialCommandGroup(
 
