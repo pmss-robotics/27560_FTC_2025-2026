@@ -59,6 +59,14 @@ public class TeleOp extends CommandOpMode{
                 () -> -driver1.getRightX() * driveMult,
                 true);
 
+        // To be used in macro
+        SequentialCommandGroup shiftBalls = new SequentialCommandGroup(
+                new WaitCommand(1000),
+                new RunCommand(() -> intake.setPower(12), intake),
+                new WaitCommand(1000),
+                new InstantCommand(() -> intake.setPower(0), intake)
+        );
+
 
         // Flywheel Control
         new GamepadButton(driver2, GamepadKeys.Button.A)
@@ -67,18 +75,28 @@ public class TeleOp extends CommandOpMode{
                         new InstantCommand(() -> outtake.setPower(OuttakeSubsystem.flywheelVelocity)));
 
         // Kicker Control
-
-        // TODO: Un-comment this section to allow kicker controls
-        /*
-        new GamepadButton(driver2, GamepadKeys.Button.B)
-                .toggleWhenPressed(outtake::kick, outtake::home);*/
-
         new GamepadButton(driver2, GamepadKeys.Button.B)
                 .whenPressed(
                         new SequentialCommandGroup(
                                 new InstantCommand(() -> outtake.kick()),
                                 new WaitCommand(200),
                                 new InstantCommand(() -> outtake.home())
+                        ));
+
+
+        //Macro to outtake 3 balls
+        new GamepadButton(driver2, GamepadKeys.Button.X)
+                .whenPressed(
+                        new SequentialCommandGroup(
+                                new RunCommand(() -> outtake.setPower(OuttakeSubsystem.flywheelVelocity), outtake),
+                                shiftBalls,
+                                shiftBalls,
+                                shiftBalls,
+                                new InstantCommand(() -> outtake.kick()),
+                                new WaitCommand(200),
+                                new InstantCommand(() -> outtake.home()),
+                                new InstantCommand(() -> outtake.setPower(0), outtake)
+
                         ));
 
 
