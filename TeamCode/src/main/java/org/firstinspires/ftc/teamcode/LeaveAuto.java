@@ -81,7 +81,7 @@ public class LeaveAuto extends CommandOpMode {
         drive = new DriveSubsystem(new MecanumDrive(hardwareMap, startPose), telemetry);
 
         Action trajectoryAction = drive.actionBuilder(drive.getPose())
-                .lineToX(-28)
+                .lineToX(parkingSpot.position.x)
                 .build();
 
         Command trajectory = new ActionCommand(trajectoryAction, Stream.of(drive).collect(Collectors.toSet()));
