@@ -61,9 +61,9 @@ public class TeleOp extends CommandOpMode{
 
         // To be used in macro
         SequentialCommandGroup shiftBalls = new SequentialCommandGroup(
-                new WaitCommand(1000),
-                new RunCommand(() -> intake.setPower(12), intake),
-                new WaitCommand(1000),
+                new WaitCommand(600),
+                new InstantCommand(() -> intake.setPower(12), intake),
+                new WaitCommand(600),
                 new InstantCommand(() -> intake.setPower(0), intake)
         );
 
@@ -71,8 +71,9 @@ public class TeleOp extends CommandOpMode{
         // Flywheel Control
         new GamepadButton(driver2, GamepadKeys.Button.A)
                 .toggleWhenPressed(
-                        new InstantCommand(() -> outtake.setPower(0.0)),
-                        new InstantCommand(() -> outtake.setPower(OuttakeSubsystem.flywheelVelocity)));
+                        new InstantCommand(() -> outtake.setPower(OuttakeSubsystem.flywheelVelocity)),
+                        new InstantCommand(() -> outtake.setPower(0.0)));
+
 
         new GamepadButton(driver2, GamepadKeys.Button.DPAD_UP)
                 .whenPressed(new InstantCommand(outtake::resetMotor));
@@ -82,7 +83,7 @@ public class TeleOp extends CommandOpMode{
                 .whenPressed(
                         new SequentialCommandGroup(
                                 new InstantCommand(() -> outtake.kick()),
-                                new WaitCommand(600),
+                                new WaitCommand(500),
                                 new InstantCommand(() -> outtake.home())
                         ));
 
@@ -91,12 +92,21 @@ public class TeleOp extends CommandOpMode{
         new GamepadButton(driver2, GamepadKeys.Button.X)
                 .whenPressed(
                         new SequentialCommandGroup(
-                                new RunCommand(() -> outtake.setPower(OuttakeSubsystem.flywheelVelocity), outtake),
-                                shiftBalls,
-                                shiftBalls,
-                                shiftBalls,
+                                new InstantCommand(() -> outtake.setPower(OuttakeSubsystem.flywheelVelocity), outtake),
+                                new WaitCommand(1200),
+
+                                new InstantCommand(() -> intake.setPower(12), intake),
+                                new WaitCommand(400),
+                                new InstantCommand(() -> intake.setPower(0), intake),
+                                new WaitCommand(800),
+
+                                new InstantCommand(() -> intake.setPower(12), intake),
+                                new WaitCommand(400),
+                                new InstantCommand(() -> intake.setPower(0), intake),
+                                new WaitCommand(800),
+
                                 new InstantCommand(() -> outtake.kick()),
-                                new WaitCommand(200),
+                                new WaitCommand(500),
                                 new InstantCommand(() -> outtake.home()),
                                 new InstantCommand(() -> outtake.setPower(0), outtake)
 
