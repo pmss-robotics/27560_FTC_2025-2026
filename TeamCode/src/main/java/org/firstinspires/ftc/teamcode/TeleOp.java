@@ -82,7 +82,7 @@ public class TeleOp extends CommandOpMode{
                 .whenPressed(
                         new SequentialCommandGroup(
                                 new InstantCommand(() -> outtake.kick()),
-                                new WaitCommand(200),
+                                new WaitCommand(600),
                                 new InstantCommand(() -> outtake.home())
                         ));
 
