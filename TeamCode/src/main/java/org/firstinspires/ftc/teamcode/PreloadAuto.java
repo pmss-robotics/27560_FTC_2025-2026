@@ -89,8 +89,8 @@ public class PreloadAuto extends CommandOpMode {
 
         } else { // Blue
             startPose = new Pose2d(40, 54, Math.toRadians(0));
-            shootingSpot = new Pose2d(29,29, Math.toRadians(225));
-            parkingSpot = new Pose2d(10,29, Math.toRadians(270));
+            shootingSpot = new Pose2d(29,29, Math.toRadians(45));
+            parkingSpot = new Pose2d(10,29, Math.toRadians(90));
         }
 
         drive = new DriveSubsystem(new MecanumDrive(hardwareMap, startPose), telemetry);

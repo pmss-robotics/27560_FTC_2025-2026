@@ -18,6 +18,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.commands.DriveCommand;
 import org.firstinspires.ftc.teamcode.drive.MecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystems.*;
+import org.firstinspires.ftc.teamcode.util.StateTransfer;
 import org.firstinspires.ftc.teamcode.util.States;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp
@@ -42,7 +43,7 @@ public class TeleOp extends CommandOpMode{
         driver1 = new GamepadEx(gamepad1);
         driver2 = new GamepadEx(gamepad2);
 
-        drive = new DriveSubsystem(new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0)), telemetry);
+        drive = new DriveSubsystem(new MecanumDrive(hardwareMap, StateTransfer.pose), telemetry);
 
         intake = new IntakeSubsystem(hardwareMap, telemetry);
 
