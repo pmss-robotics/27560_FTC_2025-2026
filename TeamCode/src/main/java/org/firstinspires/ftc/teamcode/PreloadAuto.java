@@ -114,21 +114,24 @@ public class PreloadAuto extends CommandOpMode {
                 // Drive from starting pose to shooting spot
                 new ActionCommand(toShootingSpot, Stream.of(drive).collect(Collectors.toSet())),
 
-                // Turn on flywheel and spin up for 1 second
-                new InstantCommand(() -> flywheel.setPower(12), flywheel).andThen(new WaitCommand(2000)),
+                // Copy Pasted Jerry Launch macro :)
+                new InstantCommand(() -> flywheel.setPower(OuttakeSubsystem.flywheelVelocity), flywheel),
+                new WaitCommand(1200),
 
-                // Turn on intake and feed through flywheel for 5 seconds
-                new InstantCommand(() -> intake.setPower(12), intake).andThen(new WaitCommand(5000)),
+                new InstantCommand(() -> intake.setPower(12), intake),
+                new WaitCommand(400),
+                new InstantCommand(() -> intake.setPower(0), intake),
+                new WaitCommand(800),
 
-                // Kick, and wait to launch
-                new InstantCommand(() -> flywheel.kick()).andThen(new WaitCommand(1500)),
+                new InstantCommand(() -> intake.setPower(12), intake),
+                new WaitCommand(400),
+                new InstantCommand(() -> intake.setPower(0), intake),
+                new WaitCommand(800),
 
-                // Turn off Shooting mechanisms
-                new ParallelCommandGroup(
-                        new InstantCommand(() -> flywheel.home()),
-                        new InstantCommand(() -> flywheel.setPower(12), flywheel),
-                        new InstantCommand(() -> intake.setPower(0), intake)
-                ),
+                new InstantCommand(() -> flywheel.kick()),
+                new WaitCommand(500),
+                new InstantCommand(() -> flywheel.home()),
+                new InstantCommand(() -> flywheel.setPower(0), flywheel),
 
                 // Go park
                 new ActionCommand(toPark, Stream.of(drive).collect(Collectors.toSet()))
