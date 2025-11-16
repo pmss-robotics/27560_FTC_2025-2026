@@ -84,25 +84,24 @@ public class PreloadAuto extends CommandOpMode {
 
         if (StateTransfer.alliance.equals(States.Alliance.Red)) {
             startPose = new Pose2d(-40, 54, Math.toRadians(180));
-            shootingSpot = new Pose2d(-29, 29, Math.toRadians(135));
+            shootingSpot = new Pose2d(-25, 25, Math.toRadians(135));
             parkingSpot = new Pose2d(-10,29, Math.toRadians(90));
 
         } else { // Blue
             startPose = new Pose2d(40, 54, Math.toRadians(0));
-            shootingSpot = new Pose2d(29,29, Math.toRadians(45));
-            parkingSpot = new Pose2d(10,29, Math.toRadians(90));
+            shootingSpot = new Pose2d(25,25, Math.toRadians(45));
+            parkingSpot = new Pose2d(10,25, Math.toRadians(90));
         }
 
         drive = new DriveSubsystem(new MecanumDrive(hardwareMap, startPose), telemetry);
 
         Action toShootingSpot = drive.actionBuilder(drive.getPose())
                 .strafeTo(shootingSpot.position)
-                .turnTo(shootingSpot.heading)
+                //.turnTo(shootingSpot.heading)
                 .build();
 
         Action toPark = drive.actionBuilder(drive.getPose())
-                .turnTo(parkingSpot.heading)
-                .strafeTo(parkingSpot.position)
+                .splineTo(parkingSpot.position, parkingSpot.heading)
                 .build();
 
 
@@ -116,7 +115,7 @@ public class PreloadAuto extends CommandOpMode {
 
                 // Copy Pasted Jerry Launch macro :)
                 new InstantCommand(() -> flywheel.setPower(OuttakeSubsystem.flywheelVelocity), flywheel),
-                new WaitCommand(1200),
+                new WaitCommand(5000),
 
                 new InstantCommand(() -> intake.setPower(12), intake),
                 new WaitCommand(400),

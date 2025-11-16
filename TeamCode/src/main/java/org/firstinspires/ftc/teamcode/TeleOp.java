@@ -68,7 +68,9 @@ public class TeleOp extends CommandOpMode{
                 new InstantCommand(() -> intake.setPower(0), intake)
         );
 
-
+        //Position reset
+        new GamepadButton(driver1, GamepadKeys.Button.A)
+                .whenPressed(new InstantCommand(() -> drive.drive.localizer.setPose(new Pose2d(0,0,0))));
         // Flywheel Control
         new GamepadButton(driver2, GamepadKeys.Button.A)
                 .toggleWhenPressed(
@@ -94,7 +96,7 @@ public class TeleOp extends CommandOpMode{
                 .whenPressed(
                         new SequentialCommandGroup(
                                 new InstantCommand(() -> outtake.setPower(OuttakeSubsystem.flywheelVelocity), outtake),
-                                new WaitCommand(1200),
+                                new WaitCommand(5000),
 
                                 new InstantCommand(() -> intake.setPower(12), intake),
                                 new WaitCommand(400),
