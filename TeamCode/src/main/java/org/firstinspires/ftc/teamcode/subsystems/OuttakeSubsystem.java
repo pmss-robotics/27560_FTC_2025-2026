@@ -48,7 +48,7 @@ public class OuttakeSubsystem extends SubsystemBase {
         }
 
         flywheel.setDirection(DcMotorEx.Direction.REVERSE);
-        flywheel.setCurrentAlert(4, CurrentUnit.AMPS);
+        flywheel.setCurrentAlert(flywheelMaxCurrent, CurrentUnit.AMPS);
         stallTimer = new StallTimer(flywheelStallTimeout, ElapsedTime.Resolution.MILLISECONDS);
 
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
@@ -82,14 +82,15 @@ public class OuttakeSubsystem extends SubsystemBase {
     }
 
     public void holdSpeed() {
-        flywheel.setPower(speed);
+        //flywheel.setPower(speed);
 
-        //
-        // flywheel.setPower(clamp(speed/voltageSensor.getVoltage(),0,1));
-        //if (flywheel.isOverCurrent()) stallTimer.stalling();
-        //else stallTimer.motorOn();
 
-        //if (stallTimer.shutOff()) flywheel.setMotorDisable();
+        flywheel.setPower(clamp(speed/voltageSensor.getVoltage(),0,1));
+
+        if (flywheel.isOverCurrent()) stallTimer.stalling();
+        else stallTimer.motorOn();
+
+        if (stallTimer.shutOff()) flywheel.setMotorDisable();
 
         telemetry.addData("flywheel voltage", speed);
         // telemetry.addData("flywheel current", flywheel.getCurrent(CurrentUnit.AMPS));
@@ -98,12 +99,13 @@ public class OuttakeSubsystem extends SubsystemBase {
     }
 
     public void setPower(double power) {
-        if (power > 0) speed = 1;
-        else speed = 0;
-        // speed = power;
-        //power /= voltageSensor.getVoltage();
-        flywheel.setPower(speed);
-        //flywheel.setPower(clamp(power,-1.0,1.0));
+        //if (power > 0) speed = 1;
+        //else speed = 0;
+        speed = power;
+        power /= voltageSensor.getVoltage();
+
+        //flywheel.setPower(speed);
+        flywheel.setPower(clamp(power,-1.0,1.0));
 
         if (power == 0) {
             flywheelState = States.Flywheel.stopped;

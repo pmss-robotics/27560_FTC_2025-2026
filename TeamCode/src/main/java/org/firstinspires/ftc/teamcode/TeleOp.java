@@ -47,7 +47,7 @@ public class TeleOp extends CommandOpMode{
 
         intake = new IntakeSubsystem(hardwareMap, telemetry);
 
-        outtake = new OuttakeSubsystem(hardwareMap, telemetry, /*TODO: once kicker is built change to true*/ true);
+        outtake = new OuttakeSubsystem(hardwareMap, telemetry, true);
 
 
         outtake.setDefaultCommand(new RunCommand(outtake::holdSpeed, outtake));
