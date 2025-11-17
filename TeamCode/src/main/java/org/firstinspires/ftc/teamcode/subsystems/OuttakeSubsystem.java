@@ -37,6 +37,12 @@ public class OuttakeSubsystem extends SubsystemBase {
     private double kTarget;
     private StallTimer stallTimer;
 
+    /**
+     * To access Flywheel and Servo Kicker control
+     * @param hardwareMap the OpMode's hardwareMap
+     * @param telemetry the OpMode's telemetry
+     * @param useKicker whether to enable the servo kicker; use false when servos aren't plugged in
+     **/
     public OuttakeSubsystem(HardwareMap hardwareMap, Telemetry telemetry, boolean useKicker) {
         this.telemetry = telemetry;
 

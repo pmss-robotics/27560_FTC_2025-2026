@@ -35,7 +35,7 @@ import java.util.stream.Stream;
 public class PreloadAuto extends CommandOpMode {
 
     DriveSubsystem drive;
-    OuttakeSubsystem flywheel;
+    OuttakeSubsystem outtake;
     IntakeSubsystem intake;
     private Prompter prompter;
 
@@ -47,7 +47,7 @@ public class PreloadAuto extends CommandOpMode {
 
         prompter = new Prompter(this);
 
-        flywheel = new OuttakeSubsystem(hardwareMap, telemetry, true);
+        outtake = new OuttakeSubsystem(hardwareMap, telemetry, true);
         intake = new IntakeSubsystem(hardwareMap, telemetry);
 
         prompter.prompt("alliance", new OptionPrompt<>("Select Alliance", States.Alliance.Red, States.Alliance.Blue))
@@ -105,7 +105,7 @@ public class PreloadAuto extends CommandOpMode {
                 .build();
 
 
-        flywheel.setDefaultCommand(new RunCommand(flywheel::holdSpeed, flywheel));
+        outtake.setDefaultCommand(new RunCommand(outtake::holdSpeed, outtake));
         intake.setDefaultCommand(new RunCommand(intake::holdSpeed, intake));
 
         SequentialCommandGroup routine = new SequentialCommandGroup(
@@ -114,7 +114,7 @@ public class PreloadAuto extends CommandOpMode {
                 new ActionCommand(toShootingSpot, Stream.of(drive).collect(Collectors.toSet())),
 
                 // Copy Pasted Jerry Launch macro :)
-                new InstantCommand(() -> flywheel.setPower(OuttakeSubsystem.flywheelVelocity), flywheel),
+                new InstantCommand(() -> outtake.setPower(OuttakeSubsystem.flywheelVelocity), outtake),
                 new WaitCommand(5000),
 
                 new InstantCommand(() -> intake.setPower(12), intake),
@@ -127,10 +127,10 @@ public class PreloadAuto extends CommandOpMode {
                 new InstantCommand(() -> intake.setPower(0), intake),
                 new WaitCommand(800),
 
-                new InstantCommand(() -> flywheel.kick()),
+                new InstantCommand(() -> outtake.kick()),
                 new WaitCommand(500),
-                new InstantCommand(() -> flywheel.home()),
-                new InstantCommand(() -> flywheel.setPower(0), flywheel),
+                new InstantCommand(() -> outtake.home()),
+                new InstantCommand(() -> outtake.setPower(0), outtake),
 
                 // Go park
                 new ActionCommand(toPark, Stream.of(drive).collect(Collectors.toSet()))
