@@ -16,6 +16,7 @@ import org.firstinspires.ftc.robotcore.external.function.Consumer;
 import org.firstinspires.ftc.robotcore.external.function.Continuation;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.FocusControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
 import org.firstinspires.ftc.robotcore.external.stream.CameraStreamSource;
 import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
@@ -59,7 +60,7 @@ public class VisionSubsystem extends SubsystemBase {
         builder.setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"));
         builder.enableLiveView(true);
         builder.setAutoStopLiveView(true);
-        builder.addProcessor(aprilTag);
+        builder.addProcessors(dashboard, aprilTag);
 
         visionPortal = builder.build();
 
@@ -83,6 +84,7 @@ public class VisionSubsystem extends SubsystemBase {
             gainControl.setGain(GAIN);
             sleep(20);
         }
+
         FtcDashboard.getInstance().startCameraStream(dashboard, 15);
 
     }
