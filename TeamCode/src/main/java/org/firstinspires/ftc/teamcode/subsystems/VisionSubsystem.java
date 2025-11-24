@@ -64,7 +64,7 @@ public class VisionSubsystem extends SubsystemBase {
 
         visionPortal = builder.build();
 
-        visionPortal.setProcessorEnabled(aprilTag, false);
+        visionPortal.setProcessorEnabled(aprilTag, true);
 
         ElapsedTime elapsedTime = new ElapsedTime();
         VisionPortal.CameraState cameraState = visionPortal.getCameraState();
