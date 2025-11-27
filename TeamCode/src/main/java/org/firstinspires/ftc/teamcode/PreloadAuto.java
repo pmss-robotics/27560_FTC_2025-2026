@@ -28,6 +28,7 @@ import org.firstinspires.ftc.teamcode.subsystems.OuttakeSubsystem;
 import org.firstinspires.ftc.teamcode.util.StateTransfer;
 import org.firstinspires.ftc.teamcode.util.States;
 
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -67,7 +68,6 @@ public class PreloadAuto extends CommandOpMode {
 
         while (opModeIsActive() && !isStopRequested()) {
             // This is the main loop where the command scheduler runs.
-            // prompter.run() should be placed inside this loop.c
             run();
 
             // Run any other continuous robot logic here.
@@ -100,10 +100,13 @@ public class PreloadAuto extends CommandOpMode {
                 //.turnTo(shootingSpot.heading)
                 .build();
 
-        Action toPark = drive.actionBuilder(drive.getPose())
+        //Action toPark = drive.actionBuilder(drive.getPose())
+                //.splineTo(parkingSpot.position, parkingSpot.heading)
+                //.build();
+
+        Supplier<Action> toPark = () -> drive.actionBuilder(drive.getPose())
                 .splineTo(parkingSpot.position, parkingSpot.heading)
                 .build();
-
 
         outtake.setDefaultCommand(new RunCommand(outtake::holdSpeed, outtake));
         intake.setDefaultCommand(new RunCommand(intake::holdSpeed, intake));
@@ -133,7 +136,7 @@ public class PreloadAuto extends CommandOpMode {
                 new InstantCommand(() -> outtake.setPower(0), outtake),
 
                 // Go park
-                new ActionCommand(toPark, Stream.of(drive).collect(Collectors.toSet()))
+                new ActionCommand(toPark.get(), Stream.of(drive).collect(Collectors.toSet()))
         );
 
         schedule(routine);
