@@ -37,7 +37,8 @@ public class MeepMeepTesting {
 
         myRedBot.runAction(myRedBot.getDrive().actionBuilder(redPose)
                 .setTangent(Math.toRadians(270))
-                .splineToConstantHeading(new Vector2d(-29, 29), new Rotation2d(1,1))
+                .splineToConstantHeading(new Vector2d(-29, 29), Math.toRadians(0))
+                .turnTo(toObject(myRedBot.getPose(), new Vector2d(-60,60)))
                 .waitSeconds(3) // Launch 3 Balls here
                 .turnTo(Math.toRadians(90))
                 .strafeTo(new Vector2d(-10,29))
@@ -68,19 +69,26 @@ public class MeepMeepTesting {
                 .setColorScheme(new ColorSchemeRedLight())
                 .build();
 
-        Pose2d strangePose = new Pose2d(-29,29,0);
+        Pose2d strangePose = new Pose2d(0,0,0);
         strangeBot.runAction(strangeBot.getDrive().actionBuilder(strangePose)
-                        .splineTo(strangePose.inverse().position, strangePose.inverse().heading)
-                                .build());
+                        .turnTo(Math.PI/2)
+                        .turnTo(Math.PI)
+                        .turnTo(Math.PI*1.5)
+                        .turnTo(0)
+                        .build());
 
 
-        meepMeep.setBackground(FIELD_DECODE_BLUE)
+        meepMeep.setBackground(MeepMeep.Background.FIELD_DECODE_JUICE_BLACK)
                 .setDarkMode(true)
                 .setBackgroundAlpha(0.95f)
                 .addEntity(myRedBot)
-                .addEntity(myBlueBot)
-                //.addEntity(strangeBot)
+                //.addEntity(myBlueBot)
+                .addEntity(strangeBot)
                 .start();
     }
 
+
+    private static double toObject(Pose2d robot, Vector2d object) {
+        return Math.atan2(object.y - robot.position.y, object.x - robot.position.x);
+    }
 }

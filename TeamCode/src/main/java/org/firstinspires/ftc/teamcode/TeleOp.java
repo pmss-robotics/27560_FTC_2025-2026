@@ -15,11 +15,16 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.gamepad.TriggerReader;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.commands.ActionCommand;
 import org.firstinspires.ftc.teamcode.commands.DriveCommand;
 import org.firstinspires.ftc.teamcode.drive.MecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystems.*;
+import org.firstinspires.ftc.teamcode.util.InternalPosition;
 import org.firstinspires.ftc.teamcode.util.StateTransfer;
 import org.firstinspires.ftc.teamcode.util.States;
+
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp
 public class TeleOp extends CommandOpMode{
@@ -29,6 +34,8 @@ public class TeleOp extends CommandOpMode{
 
     IntakeSubsystem intake;
     OuttakeSubsystem outtake;
+    TurretSubsystem turret;
+    private InternalPosition positionCalc;
 
     public static double driveMult = 1;
 
@@ -49,6 +56,9 @@ public class TeleOp extends CommandOpMode{
 
         outtake = new OuttakeSubsystem(hardwareMap, telemetry, true);
 
+        turret = new TurretSubsystem(hardwareMap, telemetry);
+
+        positionCalc = new InternalPosition(drive::getPose, () -> turret.getAngle());
 
         outtake.setDefaultCommand(new RunCommand(outtake::holdSpeed, outtake));
         intake.setDefaultCommand(new RunCommand(() ->intake.setPower(driver2.getLeftY()*12), intake));
@@ -59,6 +69,17 @@ public class TeleOp extends CommandOpMode{
                 () -> driver1.getLeftY() * driveMult,
                 () -> -driver1.getRightX() * driveMult,
                 true);
+
+        new GamepadButton(driver1, GamepadKeys.Button.X)
+                .whenPressed(
+                        new ActionCommand(
+                                drive.actionBuilder(drive.getPose())
+                                        .turnTo(positionCalc.autoGetAngle(StateTransfer.alliance))
+                                        .build(),
+
+                                Stream.of(drive).collect(Collectors.toSet())
+                        )
+                );
 
         // To be used in macro
         SequentialCommandGroup shiftBalls = new SequentialCommandGroup(

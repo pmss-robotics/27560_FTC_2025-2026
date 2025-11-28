@@ -19,6 +19,7 @@ public class TurretSubsystem extends SubsystemBase {
     // TODO: Rename these
     ServoImplEx servo1;
     ServoImplEx servo2;
+    private static double angle = 0;
 
     public TurretSubsystem (HardwareMap hardwareMap, Telemetry telemetry) {
         // initialize hardware here alongside other parameters
@@ -45,6 +46,11 @@ public class TurretSubsystem extends SubsystemBase {
     public void turn(double angle) {
         servo1.setPosition(scale(angle));
         servo2.setPosition(scale(angle));
+        TurretSubsystem.angle = angle;
+    }
+
+    public double getAngle() {
+        return angle;
     }
 
     private double scale(double angle) {

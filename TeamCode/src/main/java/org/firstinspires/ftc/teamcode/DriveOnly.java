@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.command.CommandOpMode;
@@ -11,16 +12,25 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.commands.ActionCommand;
 import org.firstinspires.ftc.teamcode.commands.DriveCommand;
 import org.firstinspires.ftc.teamcode.drive.MecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystems.*;
+import org.firstinspires.ftc.teamcode.util.InternalPosition;
+import org.firstinspires.ftc.teamcode.util.StateTransfer;
+import org.firstinspires.ftc.teamcode.util.States;
+
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 @TeleOp(name = "DriveOnly", group = "TeleOp")
+@Config
 public class DriveOnly extends CommandOpMode{
     GamepadEx driver1, driver2;
 
-
+    public static States.Alliance alliance = States.Alliance.Red;
     public static double driveMult = 1;
 
     @Override
@@ -31,14 +41,38 @@ public class DriveOnly extends CommandOpMode{
         telemetry.log().setCapacity(8);
         driver1 = new GamepadEx(gamepad1);
 
-        DriveSubsystem drive = new DriveSubsystem(new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0)), telemetry);
+        telemetry.addData("Test Instructions", "Place the robot at the center of the field");
+        telemetry.update();
 
+        DriveSubsystem drive = new DriveSubsystem(new MecanumDrive(hardwareMap, new Pose2d(0, 0, Math.toRadians(90))), telemetry);
+        InternalPosition positionCalc = new InternalPosition(drive::getPose, ()->0);
         // Drive
         DriveCommand driveCommand = new DriveCommand(drive,
                 () -> -driver1.getLeftX() * driveMult,
                 () -> driver1.getLeftY() * driveMult,
                 () -> -driver1.getRightX() * driveMult,
                 true);
+
+        new GamepadButton(driver1, GamepadKeys.Button.X)
+                .whenPressed(
+                        new ActionCommand(
+                                drive.actionBuilder(drive.getPose())
+                                        .turnTo(positionCalc.autoGetAngle(alliance))
+                                        .build(),
+
+                                Stream.of(drive).collect(Collectors.toSet())
+                        )
+                );
+
+        new GamepadButton(driver1, GamepadKeys.Button.DPAD_UP)
+                .whenPressed(new InstantCommand(() -> drive.drive.localizer.setPose(new Pose2d(drive.getPose().position, Math.toRadians(90)))));
+        new GamepadButton(driver1, GamepadKeys.Button.DPAD_LEFT)
+                .whenPressed(new InstantCommand(() -> drive.drive.localizer.setPose(new Pose2d(drive.getPose().position, Math.toRadians(180)))));
+        new GamepadButton(driver1, GamepadKeys.Button.DPAD_DOWN)
+                .whenPressed(new InstantCommand(() -> drive.drive.localizer.setPose(new Pose2d(drive.getPose().position, Math.toRadians(270)))));
+        new GamepadButton(driver1, GamepadKeys.Button.DPAD_RIGHT)
+                .whenPressed(new InstantCommand(() -> drive.drive.localizer.setPose(new Pose2d(drive.getPose().position, Math.toRadians(0)))));
+
 
         schedule(driveCommand);
     }

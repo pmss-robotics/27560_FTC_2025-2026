@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.util;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Rotation2d;
 import com.acmerobotics.roadrunner.Twist2d;
@@ -9,11 +10,13 @@ import com.arcrobotics.ftclib.geometry.Translation2d;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
+@Config
 public class InternalPosition {
     private Supplier<Pose2d> robot;
     private DoubleSupplier turret;
 
     public static double turretOffset = 56.93625/25.4, cameraOffset = 180.97618/25.4;
+public static Vector2d redGoal = new Vector2d(-60,60), blueGoal = new Vector2d(60, 60);
 
     public InternalPosition(Supplier<Pose2d> robotPosition, DoubleSupplier turretRotation) {
         robot = robotPosition;
@@ -37,7 +40,23 @@ public class InternalPosition {
         );
     }
 
-    public Vector2d fromPolar(double distance, double angle) {
+    public static Vector2d fromPolar(double distance, double angle) {
         return new Vector2d(distance * Math.sin(angle), distance * Math.cos(angle));
+    }
+
+    public static double getAngle(Pose2d robot, Vector2d object) {
+        return Math.atan2(object.y - robot.position.y, object.x - robot.position.x);
+    }
+
+    public static double getAngle(Pose2d robot, States.Alliance goal) {
+        switch (goal) {
+            case Red: return getAngle(robot, redGoal);
+            case Blue: return getAngle(robot, blueGoal);
+        }
+        return 0;
+    }
+
+    public double autoGetAngle(States.Alliance goal) {
+        return getAngle(robot.get(), goal);
     }
 }

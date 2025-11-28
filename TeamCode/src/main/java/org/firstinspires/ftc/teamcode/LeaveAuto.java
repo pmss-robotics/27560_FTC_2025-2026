@@ -59,7 +59,6 @@ public class LeaveAuto extends CommandOpMode {
             // prompter.run() should be placed inside this loop.c
             run();
 
-            // Run any other continuous robot logic here.
         }
         reset();
         StateTransfer.pose = drive.getPose();
