@@ -29,7 +29,7 @@ public class VisionTesting extends CommandOpMode {
         telemetry.log().setCapacity(8);
 
         try {
-            vision = new VisionSubsystem(hardwareMap,telemetry);
+            vision = new VisionSubsystem(hardwareMap,telemetry, true, true, true);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
