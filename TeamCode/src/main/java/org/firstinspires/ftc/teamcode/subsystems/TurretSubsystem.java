@@ -55,6 +55,6 @@ public class TurretSubsystem extends SubsystemBase {
 
     private double scale(double angle) {
         // TODO: Set the range based on the gear ratio of the servos (how many turns the actual turret moves not the servos)
-        return Range.scale(angle, 0, 1800, 0, 1);
+        return Range.scale(angle, -90, 90, 0, 1);
     }
 }

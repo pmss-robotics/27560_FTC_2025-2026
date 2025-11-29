@@ -8,6 +8,7 @@ import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.RunCommand;
 import com.arcrobotics.ftclib.command.button.GamepadButton;
+import com.arcrobotics.ftclib.command.button.Trigger;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 
@@ -54,15 +55,17 @@ public class DriveOnly extends CommandOpMode{
                 true);
 
         new GamepadButton(driver1, GamepadKeys.Button.X)
-                .whenPressed(
-                        new ActionCommand(
+                .whenPressed(() -> DriveCommand.driving = false)
+                .whileHeld(
+                        new RunCommand((Runnable) new ActionCommand(
                                 drive.actionBuilder(drive.getPose())
                                         .turnTo(positionCalc.autoGetAngle(alliance))
                                         .build(),
 
                                 Stream.of(drive).collect(Collectors.toSet())
-                        )
-                );
+                        ), drive)
+                )
+                .whenReleased(() -> DriveCommand.driving = true);
 
         new GamepadButton(driver1, GamepadKeys.Button.DPAD_UP)
                 .whenPressed(new InstantCommand(() -> drive.drive.localizer.setPose(new Pose2d(drive.getPose().position, Math.toRadians(90)))));
