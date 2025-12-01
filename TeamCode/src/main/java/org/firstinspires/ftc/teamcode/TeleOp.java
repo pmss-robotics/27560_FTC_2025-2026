@@ -17,6 +17,7 @@ import com.arcrobotics.ftclib.gamepad.TriggerReader;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.commands.ActionCommand;
 import org.firstinspires.ftc.teamcode.commands.DriveCommand;
+import org.firstinspires.ftc.teamcode.commands.MacroCommands;
 import org.firstinspires.ftc.teamcode.drive.MecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystems.*;
 import org.firstinspires.ftc.teamcode.util.InternalPosition;
@@ -106,36 +107,12 @@ public class TeleOp extends CommandOpMode{
         // Kicker Control
         new GamepadButton(driver2, GamepadKeys.Button.B)
                 .whenPressed(
-                        new SequentialCommandGroup(
-                                new InstantCommand(() -> outtake.kick()),
-                                new WaitCommand(500),
-                                new InstantCommand(() -> outtake.home())
-                        ));
+                        MacroCommands.kickSequence(outtake));
 
 
         //Macro to outtake 3 balls
         new GamepadButton(driver2, GamepadKeys.Button.X)
-                .whenPressed(
-                        new SequentialCommandGroup(
-                                new InstantCommand(() -> outtake.setPower(OuttakeSubsystem.flywheelVelocity), outtake),
-                                new WaitCommand(5000),
-
-                                new InstantCommand(() -> intake.setPower(12), intake),
-                                new WaitCommand(400),
-                                new InstantCommand(() -> intake.setPower(0), intake),
-                                new WaitCommand(800),
-
-                                new InstantCommand(() -> intake.setPower(12), intake),
-                                new WaitCommand(400),
-                                new InstantCommand(() -> intake.setPower(0), intake),
-                                new WaitCommand(800),
-
-                                new InstantCommand(() -> outtake.kick()),
-                                new WaitCommand(500),
-                                new InstantCommand(() -> outtake.home()),
-                                new InstantCommand(() -> outtake.setPower(0), outtake)
-
-                        ));
+                .whenPressed(MacroCommands.launchSequence(outtake, intake));
 
 
 

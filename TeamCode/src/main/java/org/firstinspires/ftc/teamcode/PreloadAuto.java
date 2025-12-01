@@ -21,6 +21,7 @@ import com.skeletonarmy.marrow.prompts.ValuePrompt;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.commands.ActionCommand;
+import org.firstinspires.ftc.teamcode.commands.MacroCommands;
 import org.firstinspires.ftc.teamcode.drive.MecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
@@ -52,7 +53,7 @@ public class PreloadAuto extends CommandOpMode {
         intake = new IntakeSubsystem(hardwareMap, telemetry);
 
         prompter.prompt("alliance", new OptionPrompt<>("Select Alliance", States.Alliance.Red, States.Alliance.Blue))
-                .onComplete(this::onPromptsComplete);
+                .onComplete(this::createPaths);
         prompter.run();
     }
     @Override
@@ -75,7 +76,7 @@ public class PreloadAuto extends CommandOpMode {
         reset();
         StateTransfer.pose = drive.getPose();
     }
-    private void onPromptsComplete() {
+    private void createPaths() {
         StateTransfer.alliance = prompter.get("alliance");
 
         Pose2d startPose;
@@ -100,9 +101,6 @@ public class PreloadAuto extends CommandOpMode {
                 //.turnTo(shootingSpot.heading)
                 .build();
 
-        //Action toPark = drive.actionBuilder(drive.getPose())
-                //.splineTo(parkingSpot.position, parkingSpot.heading)
-                //.build();
 
         Supplier<Action> toPark = () -> drive.actionBuilder(drive.getPose())
                 .splineTo(parkingSpot.position, parkingSpot.heading)
@@ -117,23 +115,7 @@ public class PreloadAuto extends CommandOpMode {
                 new ActionCommand(toShootingSpot, Stream.of(drive).collect(Collectors.toSet())),
 
                 // Copy Pasted Jerry Launch macro :)
-                new InstantCommand(() -> outtake.setPower(OuttakeSubsystem.flywheelVelocity), outtake),
-                new WaitCommand(5000),
-
-                new InstantCommand(() -> intake.setPower(12), intake),
-                new WaitCommand(400),
-                new InstantCommand(() -> intake.setPower(0), intake),
-                new WaitCommand(800),
-
-                new InstantCommand(() -> intake.setPower(12), intake),
-                new WaitCommand(400),
-                new InstantCommand(() -> intake.setPower(0), intake),
-                new WaitCommand(800),
-
-                new InstantCommand(() -> outtake.kick()),
-                new WaitCommand(500),
-                new InstantCommand(() -> outtake.home()),
-                new InstantCommand(() -> outtake.setPower(0), outtake),
+                MacroCommands.launchSequence(outtake, intake),
 
                 // Go park
                 new ActionCommand(toPark.get(), Stream.of(drive).collect(Collectors.toSet()))

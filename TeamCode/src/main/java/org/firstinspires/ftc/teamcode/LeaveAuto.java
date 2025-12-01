@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.teamcode.util.InternalPosition.flipY;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Action;
@@ -42,7 +44,7 @@ public class LeaveAuto extends CommandOpMode {
         prompter.prompt("alliance", new OptionPrompt<>("Select Alliance", States.Alliance.Red, States.Alliance.Blue))
                 .prompt("startDelay", new ValuePrompt("Starting Delay (ms)", 0, 20000, 0, 250))
                 .prompt("startPosition", new OptionPrompt<>("Starting Position", StartingPosition.goalSide, StartingPosition.farSide))
-                .onComplete(this::onPromptsComplete);
+                .onComplete(this::createPaths);
 
 
         prompter.run();
@@ -69,29 +71,35 @@ public class LeaveAuto extends CommandOpMode {
         StateTransfer.pose = drive.getPose();
     }
 
-    private void onPromptsComplete() {
+    private void createPaths() {
         StateTransfer.alliance = prompter.get("alliance");
+        StartingPosition startingPosition = prompter.get("startPose");
         Pose2d startPose;
         Pose2d parkingSpot;
 
-        switch (StateTransfer.alliance){
-            case Red:
+        switch (startingPosition){
+            case goalSide:
                 startPose = new Pose2d(-40, 54, 0);
                 parkingSpot = new Pose2d(-28, 54, 0);
                 break;
-            case Blue:
-                startPose = new Pose2d(40, 54, Math.toRadians(180));
-                parkingSpot = new Pose2d(28, 54, Math.toRadians(180));
+            case farSide:
+                startPose = new Pose2d(64,10, Math.toRadians(180));
+                parkingSpot = new Pose2d(54, 10, Math.toRadians(180));
                 break;
             default:
-                throw new IllegalStateException("Unexpected value: " + StateTransfer.alliance); // Android Studio wanted me to
+                throw new IllegalStateException("Unexpected value: " + startingPosition); // Android Studio wanted me to
         }
 
+        // Manually map the poses because I can't understand posemaps
+        if (StateTransfer.alliance == States.Alliance.Blue) {
+            startPose = flipY(startPose);
+            parkingSpot = flipY(parkingSpot);
+        }
 
         drive = new DriveSubsystem(new MecanumDrive(hardwareMap, startPose), telemetry);
 
         Action trajectoryAction = drive.actionBuilder(drive.getPose())
-                .lineToX(parkingSpot.position.x)
+                .splineTo(parkingSpot.position, parkingSpot.heading)
                 .build();
 
         Command trajectory = new SequentialCommandGroup(

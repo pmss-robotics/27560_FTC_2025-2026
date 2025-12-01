@@ -89,7 +89,6 @@ public class EmptyAuto extends CommandOpMode {
             case goalSide:
             case farSide:
                 startPose = new Pose2d(0,0,0);
-                parkingSpot = new Pose2d(0,0,0);
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + startPosition); // Android Studio wanted me to
@@ -97,13 +96,11 @@ public class EmptyAuto extends CommandOpMode {
 
         if (StateTransfer.alliance == States.Alliance.Blue) { //Map the poses when blue
             startPose = flipY(startPose);
-            parkingSpot = flipY(parkingSpot);
         }
 
         drive = new DriveSubsystem(new MecanumDrive(hardwareMap, startPose), telemetry);
 
         Action trajectoryAction = drive.actionBuilder(drive.getPose())
-                .lineToX(parkingSpot.position.x)
                 .build();
 
         Command trajectory = new SequentialCommandGroup(
