@@ -20,6 +20,7 @@ public class TurretSubsystem extends SubsystemBase {
     ServoImplEx servo1;
     ServoImplEx servo2;
     private static double angle = 0;
+    public static double minAngle = -90, maxAngle = 90;
 
     public TurretSubsystem (HardwareMap hardwareMap, Telemetry telemetry) {
         // initialize hardware here alongside other parameters
@@ -32,6 +33,10 @@ public class TurretSubsystem extends SubsystemBase {
 
         servo1.setPwmRange(new PwmControl.PwmRange(500, 2500));
         servo2.setPwmRange(new PwmControl.PwmRange(500, 2500));
+
+        angle = 0;
+        servo1.setPosition(scale(angle));
+        servo2.setPosition(scale(angle));
     }
 
     @Override
@@ -44,6 +49,10 @@ public class TurretSubsystem extends SubsystemBase {
     }
 
     public void turn(double angle) {
+        if (Double.isNaN(angle)) {
+            return;
+        }
+        angle = Range.clip(angle, minAngle, maxAngle);
         servo1.setPosition(scale(angle));
         servo2.setPosition(scale(angle));
         TurretSubsystem.angle = angle;
@@ -54,7 +63,6 @@ public class TurretSubsystem extends SubsystemBase {
     }
 
     private double scale(double angle) {
-        // TODO: Set the range based on the gear ratio of the servos (how many turns the actual turret moves not the servos)
-        return Range.scale(angle, -90, 90, 0, 1);
+        return Range.scale(angle, -216, 216, 0, 1);
     }
 }

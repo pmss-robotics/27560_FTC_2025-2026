@@ -121,11 +121,13 @@ public class OuttakeSubsystem extends SubsystemBase {
     }
 
     public void kick() {
+        kickerState = States.Kicker.kick;
         leftKicker.setPosition(scale(lKick));
         rightKicker.setPosition(scale(rKick));
     }
 
     public void home() {
+        kickerState = States.Kicker.kick;
         leftKicker.setPosition(scale(lHome));
         rightKicker.setPosition(scale(rHome));
     }

@@ -14,12 +14,12 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.function.Consumer;
 import org.firstinspires.ftc.robotcore.external.function.Continuation;
-import org.firstinspires.ftc.robotcore.external.function.Supplier;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
 import org.firstinspires.ftc.robotcore.external.stream.CameraStreamSource;
 import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
+import org.firstinspires.ftc.teamcode.util.StateTransfer;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.VisionProcessor;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
@@ -35,81 +35,55 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Config // Makes variables changeable on the FTC dashboard
-public class VisionSubsystem extends SubsystemBase {
+public class TurretVisionSubsystem extends SubsystemBase {
 
     public static int EXPOSURE_MS = 6;
     public static int GAIN = 190;
 
-    private AprilTagProcessor obeliskAprilTag;
     private AprilTagProcessor goalAprilTag;
-    private static AprilTagLibrary decodeObelisk;
     private static AprilTagLibrary decodeGoal;
-    private VisionPortal webcam1VisionPortal;
-    private VisionPortal webcam2VisionPortal;
+    private VisionPortal visionPortal;
     private Telemetry telemetry;
-    public VisionSubsystem(HardwareMap hardwareMap, Telemetry telemetry, boolean debug, boolean obeliskDetection, boolean goalDetection) throws InterruptedException {
+    private double red, blue;
+    public TurretVisionSubsystem(HardwareMap hardwareMap, Telemetry telemetry, boolean debug) throws InterruptedException {
         this.telemetry = telemetry;
 
         final CameraStreamProcessor dashboard = new CameraStreamProcessor();
-
-        if (obeliskDetection) {
-            obeliskAprilTag = new AprilTagProcessor.Builder()
-                    .setDrawAxes(debug)
-                    .setDrawCubeProjection(debug)
-                    .setDrawTagOutline(debug)
-                    .setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
-                    .setTagLibrary(getDecodeObeliskLibrary())
-                    .build();
-
-
-            webcam1VisionPortal = new VisionPortal.Builder()
-                    .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
-                    .enableLiveView(debug)
-                    .setAutoStopLiveView(true)
-                    .addProcessors(dashboard, obeliskAprilTag)
-                    .build();
-
-            webcam1VisionPortal.setProcessorEnabled(obeliskAprilTag, false);
-        }
-
-        if (goalDetection) {
-            goalAprilTag = new AprilTagProcessor.Builder()
-                    .setDrawAxes(debug)
-                    .setDrawCubeProjection(debug)
-                    .setDrawTagOutline(debug)
-                    .setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
-                    .setTagLibrary(getDecodeGoalLibrary())
-                    .build();
+        
+        goalAprilTag = new AprilTagProcessor.Builder()
+                .setDrawAxes(debug)
+                .setDrawCubeProjection(debug)
+                .setDrawTagOutline(debug)
+                .setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
+                .setTagLibrary(getDecodeGoalLibrary())
+                .build();
 
 
-            webcam2VisionPortal = new VisionPortal.Builder()
-                    .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
-                    .enableLiveView(debug)
-                    .setAutoStopLiveView(true)
-                    .addProcessors(dashboard, goalAprilTag)
-                    .build();
+        visionPortal = new VisionPortal.Builder()
+                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+                .setAutoStopLiveView(true)
+                .enableLiveView(debug)
+                .addProcessors(dashboard, goalAprilTag)
+                .build();
 
-            webcam2VisionPortal.setProcessorEnabled(goalAprilTag, false);
-        }
-
+        visionPortal.setProcessorEnabled(goalAprilTag, false);
+        
         ElapsedTime elapsedTime = new ElapsedTime();
-
-
-        VisionPortal.CameraState cameraState = webcam1VisionPortal.getCameraState();
+        VisionPortal.CameraState cameraState = visionPortal.getCameraState();
 
         while(elapsedTime.seconds() < 20 && cameraState != VisionPortal.CameraState.STREAMING){
-            cameraState = webcam1VisionPortal.getCameraState();
+            cameraState = visionPortal.getCameraState();
         }
-        telemetry.log().add("Time from build to streaming " + elapsedTime.milliseconds() + "ms");
-        if (webcam1VisionPortal.getCameraState() == VisionPortal.CameraState.STREAMING) {
-            ExposureControl exposureControl = webcam1VisionPortal.getCameraControl(ExposureControl.class);
+        telemetry.log().add("Time from build to streaming (Webcam2) " + elapsedTime.milliseconds() + "ms");
+        if (visionPortal.getCameraState() == VisionPortal.CameraState.STREAMING) {
+            ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
             if (exposureControl.getMode() != ExposureControl.Mode.Manual) {
                 exposureControl.setMode(ExposureControl.Mode.Manual);
                 sleep(50);
             }
             exposureControl.setExposure(EXPOSURE_MS, TimeUnit.MILLISECONDS);
             sleep(20);
-            GainControl gainControl = webcam1VisionPortal.getCameraControl(GainControl.class);
+            GainControl gainControl = visionPortal.getCameraControl(GainControl.class);
             gainControl.setGain(GAIN);
             sleep(20);
         }
@@ -124,12 +98,12 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     public void enableDetection(boolean enabled) {
-        webcam1VisionPortal.setProcessorEnabled(obeliskAprilTag, enabled);
+        visionPortal.setProcessorEnabled(goalAprilTag, enabled);
     }
 
     private void telemetryAprilTag() {
 
-        List<AprilTagDetection> currentDetections = obeliskAprilTag.getDetections();
+        List<AprilTagDetection> currentDetections = goalAprilTag.getDetections();
         telemetry.addData("# AprilTags Detected", currentDetections.size());
 
         for (AprilTagDetection detection : currentDetections) {
@@ -142,28 +116,28 @@ public class VisionSubsystem extends SubsystemBase {
         }
     }
 
-    private void obeliskAprilTagDetection() {
-        List<AprilTagDetection> currentDetections = obeliskAprilTag.getDetections();
+    public double update() {
+        List<AprilTagDetection> currentDetections = goalAprilTag.getDetections();
+        double red = 0, blue = 0;
 
         for (AprilTagDetection detection : currentDetections) {
             if (detection.metadata != null) {
-                //TODO: get position relative to camera
-                //TODO: add bearing/yaw (left-right ness)
+                switch (detection.id) {
+                    case 20: blue = detection.ftcPose.bearing;
+                    case 24: red = detection.ftcPose.bearing;
+                }
             }
         }
-        //TODO: Set the detection based on the States.ObeliskVisionMode
-    }
 
-    private AprilTagLibrary getDecodeObeliskLibrary() {
-        if (decodeObelisk == null) {
-            AprilTagLibrary decodeLibrary = AprilTagGameDatabase.getDecodeTagLibrary();
-            decodeObelisk = new AprilTagLibrary.Builder()
-                    .addTag(decodeLibrary.lookupTag(21))
-                    .addTag(decodeLibrary.lookupTag(22))
-                    .addTag(decodeLibrary.lookupTag(23))
-                    .build();
+        switch (StateTransfer.alliance) {
+            case Red: return red;
+            case Blue: return blue;
         }
-        return decodeObelisk;
+
+        //TODO: extra correction if you see other goal april tag
+
+        // Fallback
+        return Double.NaN;
     }
 
     private AprilTagLibrary getDecodeGoalLibrary() {

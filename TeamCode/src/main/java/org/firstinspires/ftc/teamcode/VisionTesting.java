@@ -9,13 +9,16 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.subsystems.VisionSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.ObeliskVisionSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.TurretVisionSubsystem;
+import org.firstinspires.ftc.vision.VisionPortal;
 
 
-@TeleOp(name = "VisionTesting")
+@TeleOp(name = "VisionTesting", group = "Testing")
 public class VisionTesting extends CommandOpMode {
 
-    VisionSubsystem vision;
+    ObeliskVisionSubsystem obeliskVision;
+    TurretVisionSubsystem turretVision;
 
     GamepadEx tools;
 
@@ -28,8 +31,10 @@ public class VisionTesting extends CommandOpMode {
         telemetry.log().setDisplayOrder(Telemetry.Log.DisplayOrder.NEWEST_FIRST);
         telemetry.log().setCapacity(8);
 
+
         try {
-            vision = new VisionSubsystem(hardwareMap,telemetry, true, true, true);
+            obeliskVision = new ObeliskVisionSubsystem(hardwareMap, telemetry, true);
+
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -39,16 +44,18 @@ public class VisionTesting extends CommandOpMode {
 
         new GamepadButton(tools, GamepadKeys.Button.A).whenPressed(
                 new InstantCommand(() -> {
-                    vision.enableDetection(true);
+                    obeliskVision.enableDetection(true);
                     telemetry.addData("Detecting?","true");
                     telemetry.update();
                 }));
         new GamepadButton(tools, GamepadKeys.Button.B).whenPressed(
                 new InstantCommand(() -> {
-                    vision.enableDetection(false);
-                    telemetry.addData("Detecting?","false");
+                    obeliskVision.enableDetection(false);
+                    telemetry.addData("Detecting?", "false");
                     telemetry.update();
                 }));
+
+
     }
 
 

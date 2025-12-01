@@ -26,7 +26,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@TeleOp(name = "DriveOnly", group = "TeleOp")
+@TeleOp(name = "DriveOnly", group = "Testing")
 @Config
 public class DriveOnly extends CommandOpMode{
     GamepadEx driver1, driver2;
@@ -57,13 +57,13 @@ public class DriveOnly extends CommandOpMode{
         new GamepadButton(driver1, GamepadKeys.Button.X)
                 .whenPressed(() -> DriveCommand.driving = false)
                 .whileHeld(
-                        new RunCommand((Runnable) new ActionCommand(
+                        new ActionCommand(
                                 drive.actionBuilder(drive.getPose())
                                         .turnTo(positionCalc.autoGetAngle(alliance))
                                         .build(),
 
                                 Stream.of(drive).collect(Collectors.toSet())
-                        ), drive)
+                        )
                 )
                 .whenReleased(() -> DriveCommand.driving = true);
 

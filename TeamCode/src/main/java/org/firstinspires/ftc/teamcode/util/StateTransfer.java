@@ -10,5 +10,5 @@ public class StateTransfer {
     public static States.Obelisk motif = States.Obelisk.unread;
 
     public static States.Alliance alliance;
-    public static Pose2d pose = new Pose2d(0,0,0);
+    public static Pose2d pose = new Pose2d(0,0,Math.PI/2);
 }

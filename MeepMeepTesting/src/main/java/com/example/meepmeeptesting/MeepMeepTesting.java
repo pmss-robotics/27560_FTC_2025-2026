@@ -1,7 +1,15 @@
 package com.example.meepmeeptesting;
 
+import static com.example.meepmeeptesting.InternalPosition.flipY;
+
+import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.Pose2dDual;
+import com.acmerobotics.roadrunner.ProfileParams;
 import com.acmerobotics.roadrunner.Rotation2d;
+import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.TrajectoryBuilder;
+import com.acmerobotics.roadrunner.TrajectoryBuilderParams;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeBlueDark;
@@ -14,8 +22,11 @@ import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
+import java.util.function.Function;
 
 import javax.imageio.ImageIO;
+
+import kotlin.jvm.functions.Function1;
 
 public class MeepMeepTesting {
     public static void main(String[] args) {
@@ -77,7 +88,7 @@ public class MeepMeepTesting {
                         .turnTo(0)
                         .build());
 
-
+        
         meepMeep.setBackground(MeepMeep.Background.FIELD_DECODE_JUICE_BLACK)
                 .setDarkMode(true)
                 .setBackgroundAlpha(0.95f)
@@ -86,6 +97,18 @@ public class MeepMeepTesting {
                 .addEntity(strangeBot)
                 .start();
     }
+
+    /*Action LeaveAuto(RoadRunnerBotEntity bot, boolean red) {
+        Pose2d startPose, parkPose;
+
+        startPose = new Pose2d(0,0,0);
+        parkPose = new Pose2d(0,0,0);
+
+        TrajectoryActionBuilder
+        startPose = red ? startPose : flipY(startPose);
+        return bot.getDrive().actionBuilder(startPose)
+                .build();
+    }*/
 
 
     private static double toObject(Pose2d robot, Vector2d object) {

@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.teamcode.util.InternalPosition.flipY;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Action;
@@ -9,6 +11,7 @@ import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.skeletonarmy.marrow.prompts.BooleanPrompt;
 import com.skeletonarmy.marrow.prompts.OptionPrompt;
 import com.skeletonarmy.marrow.prompts.Prompter;
@@ -21,12 +24,14 @@ import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
 import org.firstinspires.ftc.teamcode.util.StateTransfer;
 import org.firstinspires.ftc.teamcode.util.States;
 
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Autonomous(name = "LeaveAuto", group = "Auto")
-public class LeaveAuto extends CommandOpMode {
+@Autonomous(name = "EmptyAuto", group = "Auto")
+@Disabled
+public class EmptyAuto extends CommandOpMode {
 
     DriveSubsystem drive;
     private Prompter prompter;
@@ -37,12 +42,14 @@ public class LeaveAuto extends CommandOpMode {
         telemetry.log().setDisplayOrder(Telemetry.Log.DisplayOrder.NEWEST_FIRST);
         telemetry.log().setCapacity(8);
 
+        // Initialize subsystems here
+
         prompter = new Prompter(this);
 
         prompter.prompt("alliance", new OptionPrompt<>("Select Alliance", States.Alliance.Red, States.Alliance.Blue))
                 .prompt("startDelay", new ValuePrompt("Starting Delay (ms)", 0, 20000, 0, 250))
                 .prompt("startPosition", new OptionPrompt<>("Starting Position", StartingPosition.goalSide, StartingPosition.farSide))
-                .onComplete(this::onPromptsComplete);
+                .onComplete(this::createPaths);
 
 
         prompter.run();
@@ -69,24 +76,29 @@ public class LeaveAuto extends CommandOpMode {
         StateTransfer.pose = drive.getPose();
     }
 
-    private void onPromptsComplete() {
+    private void createPaths() {
+        // Find starting position and generate paths
         StateTransfer.alliance = prompter.get("alliance");
+        StartingPosition startPosition = prompter.get("startPosition");
+
+        // Init poses
         Pose2d startPose;
         Pose2d parkingSpot;
 
-        switch (StateTransfer.alliance){
-            case Red:
-                startPose = new Pose2d(-40, 54, 0);
-                parkingSpot = new Pose2d(-28, 54, 0);
-                break;
-            case Blue:
-                startPose = new Pose2d(40, 54, Math.toRadians(180));
-                parkingSpot = new Pose2d(28, 54, Math.toRadians(180));
+        switch (startPosition){
+            case goalSide:
+            case farSide:
+                startPose = new Pose2d(0,0,0);
+                parkingSpot = new Pose2d(0,0,0);
                 break;
             default:
-                throw new IllegalStateException("Unexpected value: " + StateTransfer.alliance); // Android Studio wanted me to
+                throw new IllegalStateException("Unexpected value: " + startPosition); // Android Studio wanted me to
         }
 
+        if (StateTransfer.alliance == States.Alliance.Blue) { //Map the poses when blue
+            startPose = flipY(startPose);
+            parkingSpot = flipY(parkingSpot);
+        }
 
         drive = new DriveSubsystem(new MecanumDrive(hardwareMap, startPose), telemetry);
 
