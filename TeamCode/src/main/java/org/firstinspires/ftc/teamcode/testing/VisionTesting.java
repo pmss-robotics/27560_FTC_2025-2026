@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.testing;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -11,7 +11,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.subsystems.ObeliskVisionSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.TurretVisionSubsystem;
-import org.firstinspires.ftc.vision.VisionPortal;
 
 
 @TeleOp(name = "VisionTesting", group = "Testing")
