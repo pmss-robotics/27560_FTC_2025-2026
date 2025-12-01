@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.button.GamepadButton;
@@ -16,10 +17,12 @@ import org.firstinspires.ftc.teamcode.commands.DriveCommand;
 import org.firstinspires.ftc.teamcode.drive.MecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystems.*;
 import org.firstinspires.ftc.teamcode.util.InternalPosition;
+import org.firstinspires.ftc.teamcode.util.StateTransfer;
 import org.firstinspires.ftc.teamcode.util.States;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -47,22 +50,30 @@ public class DriveOnly extends CommandOpMode{
         // Drive
         DriveCommand driveCommand = new DriveCommand(drive,
                 () -> -driver1.getLeftX() * driveMult,
-                () -> driver1.getLeftY() * driveMult,
+                () -> -driver1.getLeftY() * driveMult,
                 () -> -driver1.getRightX() * driveMult,
                 true);
 
-        new GamepadButton(driver1, GamepadKeys.Button.X)
-                .whenPressed(() -> DriveCommand.driving = false)
-                .whileHeld(
-                        new ActionCommand(
-                                drive.actionBuilder(drive.getPose())
-                                        .turnTo(positionCalc.autoGetAngle(alliance))
-                                        .build(),
+//        Command turnCommand = new ActionCommand(
+//                drive.actionBuilder(drive.getPose())
+//                        .turnTo(positionCalc.autoGetAngle(alliance))
+//                        .build(),
+//
+//                Stream.of(drive).collect(Collectors.toSet())
+//        );
+//
+//        new GamepadButton(driver1, GamepadKeys.Button.X)
+//                .whenPressed(() -> DriveCommand.driving = false)
+//                .whileHeld(turnCommand)
+//                .whenReleased(() -> {
+//                    DriveCommand.driving = true;
+//                });
 
-                                Stream.of(drive).collect(Collectors.toSet())
-                        )
-                )
-                .whenReleased(() -> DriveCommand.driving = true);
+        new GamepadButton(driver1, GamepadKeys.Button.A)
+                .whenPressed(new InstantCommand(() -> StateTransfer.alliance = States.Alliance.Red));
+
+        new GamepadButton(driver1, GamepadKeys.Button.B)
+                .whenPressed(new InstantCommand(() -> StateTransfer.alliance = States.Alliance.Blue));
 
         new GamepadButton(driver1, GamepadKeys.Button.DPAD_UP)
                 .whenPressed(new InstantCommand(() -> drive.drive.localizer.setPose(new Pose2d(drive.getPose().position, Math.toRadians(90)))));

@@ -45,7 +45,7 @@ public class TurretTest extends CommandOpMode {
         new GamepadButton(driver1, GamepadKeys.Button.DPAD_LEFT)
                 .whenPressed(new InstantCommand(() -> StateTransfer.alliance = States.Alliance.Red));
 
-        new GamepadButton(driver1, GamepadKeys.Button.DPAD_LEFT)
+        new GamepadButton(driver1, GamepadKeys.Button.DPAD_RIGHT)
                 .whenPressed(new InstantCommand(() -> StateTransfer.alliance = States.Alliance.Blue));
     }
 }

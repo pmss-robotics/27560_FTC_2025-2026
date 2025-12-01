@@ -1,6 +1,7 @@
 package com.example.meepmeeptesting;
 
 import static com.example.meepmeeptesting.InternalPosition.flipY;
+import static com.example.meepmeeptesting.InternalPosition.getAngle;
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
@@ -35,6 +36,7 @@ public class MeepMeepTesting {
         catch(IOException e) {}
 
         MeepMeep meepMeep = new MeepMeep(600);
+
         // Red Auto
 
         RoadRunnerBotEntity myRedBot = new DefaultBotBuilder(meepMeep)
@@ -44,57 +46,21 @@ public class MeepMeepTesting {
                 .setColorScheme(new ColorSchemeRedDark())
                 .build();
 
-        Pose2d redPose = new Pose2d(-40, 54, Math.toRadians(180));
-
-        myRedBot.runAction(myRedBot.getDrive().actionBuilder(redPose)
-                .setTangent(Math.toRadians(270))
-                .splineToConstantHeading(new Vector2d(-29, 29), Math.toRadians(0))
-                .turnTo(toObject(myRedBot.getPose(), new Vector2d(-60,60)))
-                .waitSeconds(3) // Launch 3 Balls here
-                .turnTo(Math.toRadians(90))
-                .strafeTo(new Vector2d(-10,29))
+        Pose2d startPose = new Pose2d(-40, 54, Math.toRadians(180));
+        Pose2d shootPose = new Pose2d(-20, 20, Math.toRadians(215));
+        Pose2d row1 = new Pose2d(-12,32, Math.toRadians(90));
+        myRedBot.runAction(myRedBot.getDrive().actionBuilder(startPose)
+                .strafeToLinearHeading(shootPose.position, getAngle(shootPose, new Vector2d(-60, 60)))
+                .waitSeconds(1)
+                .strafeToLinearHeading(row1.position, row1.heading)
                 .build());
 
         // Blue Auto
 
-        RoadRunnerBotEntity myBlueBot = new DefaultBotBuilder(meepMeep)
-                .setDimensions(17.25, 16.378)
-                // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
-                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
-                .setColorScheme(new ColorSchemeBlueDark())
-                .build();
-        Pose2d bluePose = new Pose2d(40, 54, 0);
-
-        myBlueBot.runAction(myBlueBot.getDrive().actionBuilder(bluePose)
-                .strafeTo(new Vector2d(29, 29))
-                .turnTo(Math.toRadians(45))
-                .waitSeconds(3)// Between here launch 3 balls
-                .turnTo(Math.toRadians(90))
-                .strafeTo(new Vector2d(10,29))
-                .build());
-
-        RoadRunnerBotEntity strangeBot = new DefaultBotBuilder(meepMeep)
-                .setDimensions(17.25, 16.378)
-                // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
-                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
-                .setColorScheme(new ColorSchemeRedLight())
-                .build();
-
-        Pose2d strangePose = new Pose2d(0,0,0);
-        strangeBot.runAction(strangeBot.getDrive().actionBuilder(strangePose)
-                        .turnTo(Math.PI/2)
-                        .turnTo(Math.PI)
-                        .turnTo(Math.PI*1.5)
-                        .turnTo(0)
-                        .build());
-
-        
         meepMeep.setBackground(MeepMeep.Background.FIELD_DECODE_JUICE_BLACK)
                 .setDarkMode(true)
                 .setBackgroundAlpha(0.95f)
                 .addEntity(myRedBot)
-                //.addEntity(myBlueBot)
-                .addEntity(strangeBot)
                 .start();
     }
 

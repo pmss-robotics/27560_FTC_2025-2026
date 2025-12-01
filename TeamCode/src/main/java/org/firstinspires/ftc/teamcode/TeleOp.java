@@ -67,20 +67,20 @@ public class TeleOp extends CommandOpMode{
         // Drive
         DriveCommand driveCommand = new DriveCommand(drive,
                 () -> -driver1.getLeftX() * driveMult,
-                () -> driver1.getLeftY() * driveMult,
+                () -> -driver1.getLeftY() * driveMult,
                 () -> -driver1.getRightX() * driveMult,
                 true);
 
-        new GamepadButton(driver1, GamepadKeys.Button.X)
-                .whenPressed(
-                        new ActionCommand(
-                                drive.actionBuilder(drive.getPose())
-                                        .turnTo(positionCalc.autoGetAngle(StateTransfer.alliance))
-                                        .build(),
-
-                                Stream.of(drive).collect(Collectors.toSet())
-                        )
-                );
+//        new GamepadButton(driver1, GamepadKeys.Button.X)
+//                .whenPressed(
+//                        new ActionCommand(
+//                                drive.actionBuilder(drive.getPose())
+//                                        .turnTo(positionCalc.autoGetAngle(StateTransfer.alliance))
+//                                        .build(),
+//
+//                                Stream.of(drive).collect(Collectors.toSet())
+//                        )
+//                );
 
         // To be used in macro
         SequentialCommandGroup shiftBalls = new SequentialCommandGroup(
