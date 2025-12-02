@@ -47,12 +47,44 @@ public class MeepMeepTesting {
                 .build();
 
         Pose2d startPose = new Pose2d(-40, 54, Math.toRadians(180));
-        Pose2d shootPose = new Pose2d(-20, 20, Math.toRadians(215));
-        Pose2d row1 = new Pose2d(-12,32, Math.toRadians(90));
+        Pose2d shootPose = new Pose2d(-20, 20, Math.toRadians(135));
+        Pose2d gatePose = new Pose2d(0, 52, Math.toRadians(180));
+        Pose2d row1 = new Pose2d(-12,26, Math.toRadians(90));
+        Pose2d row2 = new Pose2d(12, 26, Math.toRadians(90));
+        Pose2d row3 = new Pose2d(36, 26, Math.toRadians(90));
+
         myRedBot.runAction(myRedBot.getDrive().actionBuilder(startPose)
-                .strafeToLinearHeading(shootPose.position, getAngle(shootPose, new Vector2d(-60, 60)))
-                .waitSeconds(1)
+                .lineToY(48) // Intake
+
+                .strafeToLinearHeading(shootPose.position, shootPose.heading)
+                .waitSeconds(1) // Launch balls
+
+                .strafeToLinearHeading(gatePose.position, gatePose.heading)
+                .strafeToLinearHeading(shootPose.position, shootPose.heading)
+                .waitSeconds(1) // Launch balls
+
                 .strafeToLinearHeading(row1.position, row1.heading)
+                .setTangent(row1.heading)
+                .lineToY(48) // Intake
+
+                .strafeToLinearHeading(gatePose.position, gatePose.heading)
+                .setTangent(gatePose.heading)
+                .strafeTo(new Vector2d(0, 56)) // Push Gate
+                .waitSeconds(2) // Wait for balls to exit the gate
+
+                .strafeToLinearHeading(shootPose.position, shootPose.heading)
+                .waitSeconds(1) // Launch balls
+
+                .strafeToLinearHeading(row2.position, row2.heading)
+                .setTangent(row2.heading)
+                .lineToY(48) // Intake
+
+                .strafeToLinearHeading(shootPose.position, shootPose.heading)
+                .waitSeconds(1) // Launch balls
+
+                .strafeToLinearHeading(row3.position, row3.heading)
+                .setTangent(row3.heading)
+
                 .build());
 
         // Blue Auto

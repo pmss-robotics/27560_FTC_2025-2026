@@ -57,7 +57,7 @@ public static Vector2d redGoal = new Vector2d(-60,60), blueGoal = new Vector2d(6
     }
 
     public static Pose2d flipY(Pose2d oldPose) {
-        return new Pose2d(new Vector2d(oldPose.position.x, -oldPose.position.y), new Rotation2d(-oldPose.heading.real, oldPose.heading.imag));
+        return new Pose2d(new Vector2d(-oldPose.position.x, oldPose.position.y), new Rotation2d(-oldPose.heading.real, oldPose.heading.imag));
     }
     public double autoGetAngle(States.Alliance goal) {
         return getAngle(robot.get(), goal);
