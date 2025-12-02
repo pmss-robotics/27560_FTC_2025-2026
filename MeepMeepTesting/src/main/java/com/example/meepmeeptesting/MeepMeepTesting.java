@@ -14,6 +14,7 @@ import com.acmerobotics.roadrunner.TrajectoryBuilderParams;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeBlueDark;
+import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeBlueLight;
 import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeRedDark;
 import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeRedLight;
 import com.noahbres.meepmeep.roadrunner.Constraints;
@@ -54,12 +55,6 @@ public class MeepMeepTesting {
         Pose2d row3 = new Pose2d(36, 26, Math.toRadians(90));
 
         myRedBot.runAction(myRedBot.getDrive().actionBuilder(startPose)
-                .lineToY(48) // Intake
-
-                .strafeToLinearHeading(shootPose.position, shootPose.heading)
-                .waitSeconds(1) // Launch balls
-
-                .strafeToLinearHeading(gatePose.position, gatePose.heading)
                 .strafeToLinearHeading(shootPose.position, shootPose.heading)
                 .waitSeconds(1) // Launch balls
 
@@ -84,15 +79,33 @@ public class MeepMeepTesting {
 
                 .strafeToLinearHeading(row3.position, row3.heading)
                 .setTangent(row3.heading)
+                .lineToY(48) // Intake
+
+                .strafeToLinearHeading(shootPose.position, shootPose.heading)
+                .waitSeconds(1) // Launch balls
+
+                .strafeToLinearHeading(gatePose.position, gatePose.heading)
 
                 .build());
 
-        // Blue Auto
+        // Driving Testbot
+        RoadRunnerBotEntity testBot = new DefaultBotBuilder(meepMeep)
+                .setDimensions(17.25, 16.378)
+                // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
+                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
+                .setColorScheme(new ColorSchemeBlueLight())
+                .build();
+
+        testBot.runAction(myRedBot.getDrive().actionBuilder(startPose)
+                .setTangent(Math.toRadians(90))
+                .strafeToLinearHeading(shootPose.position, shootPose.heading)
+                .build());
 
         meepMeep.setBackground(MeepMeep.Background.FIELD_DECODE_JUICE_BLACK)
                 .setDarkMode(true)
                 .setBackgroundAlpha(0.95f)
                 .addEntity(myRedBot)
+                //.addEntity(testBot)
                 .start();
     }
 
