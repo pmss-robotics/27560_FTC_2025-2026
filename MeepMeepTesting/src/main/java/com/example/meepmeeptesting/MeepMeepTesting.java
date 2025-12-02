@@ -58,28 +58,27 @@ public class MeepMeepTesting {
                 .strafeToLinearHeading(shootPose.position, shootPose.heading)
                 .waitSeconds(1) // Launch balls
 
-                .strafeToLinearHeading(row1.position, row1.heading)
-                .setTangent(row1.heading)
-                .lineToY(48) // Intake
+                .setTangent(Math.toRadians(0))
+                .splineToSplineHeading(row1, row1.heading)
+                .splineToLinearHeading(new Pose2d(row1.position.x, 46, row1.heading.log()), row1.heading) // Intake
 
-                .strafeToLinearHeading(gatePose.position, gatePose.heading)
+                .splineToSplineHeading(gatePose, gatePose.heading)
                 .setTangent(gatePose.heading)
                 .strafeTo(new Vector2d(0, 56)) // Push Gate
-                .waitSeconds(2) // Wait for balls to exit the gate
 
                 .strafeToLinearHeading(shootPose.position, shootPose.heading)
                 .waitSeconds(1) // Launch balls
 
-                .strafeToLinearHeading(row2.position, row2.heading)
-                .setTangent(row2.heading)
-                .lineToY(48) // Intake
+                .setTangent(Math.toRadians(-25))
+                .splineToSplineHeading(row2, row2.heading)
+                .splineToLinearHeading(new Pose2d(row2.position.x, 46, row2.heading.log()), row2.heading) // Intake
 
                 .strafeToLinearHeading(shootPose.position, shootPose.heading)
                 .waitSeconds(1) // Launch balls
 
-                .strafeToLinearHeading(row3.position, row3.heading)
-                .setTangent(row3.heading)
-                .lineToY(48) // Intake
+                .setTangent(Math.toRadians(-5))
+                .splineToSplineHeading(row1, row1.heading)
+                .splineToLinearHeading(new Pose2d(row3.position.x, 46, row3.heading.log()), row3.heading) // Intake
 
                 .strafeToLinearHeading(shootPose.position, shootPose.heading)
                 .waitSeconds(1) // Launch balls
@@ -97,8 +96,7 @@ public class MeepMeepTesting {
                 .build();
 
         testBot.runAction(myRedBot.getDrive().actionBuilder(startPose)
-                .setTangent(Math.toRadians(90))
-                .strafeToLinearHeading(shootPose.position, shootPose.heading)
+                //.splineToLinearHeading(shootPose, -shootPose.heading.log())
                 .build());
 
         meepMeep.setBackground(MeepMeep.Background.FIELD_DECODE_JUICE_BLACK)
