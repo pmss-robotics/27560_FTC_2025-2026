@@ -50,9 +50,9 @@ public class MeepMeepTesting {
         Pose2d startPose = new Pose2d(-40, 54, Math.toRadians(180));
         Pose2d shootPose = new Pose2d(-20, 20, Math.toRadians(135));
         Pose2d gatePose = new Pose2d(0, 52, Math.toRadians(180));
-        Pose2d row1 = new Pose2d(-12,26, Math.toRadians(90));
-        Pose2d row2 = new Pose2d(12, 26, Math.toRadians(90));
-        Pose2d row3 = new Pose2d(36, 26, Math.toRadians(90));
+        Pose2d row1 = new Pose2d(-12,32, Math.toRadians(90));
+        Pose2d row2 = new Pose2d(12, 32, Math.toRadians(90));
+        Pose2d row3 = new Pose2d(36, 32, Math.toRadians(90));
 
         myRedBot.runAction(myRedBot.getDrive().actionBuilder(startPose)
                 .strafeToLinearHeading(shootPose.position, shootPose.heading)
@@ -69,15 +69,15 @@ public class MeepMeepTesting {
                 .strafeToLinearHeading(shootPose.position, shootPose.heading)
                 .waitSeconds(1) // Launch balls
 
-                .setTangent(Math.toRadians(-25))
+                .setTangent(Math.toRadians(-5))
                 .splineToSplineHeading(row2, row2.heading)
                 .splineToLinearHeading(new Pose2d(row2.position.x, 46, row2.heading.log()), row2.heading) // Intake
 
                 .strafeToLinearHeading(shootPose.position, shootPose.heading)
                 .waitSeconds(1) // Launch balls
 
-                .setTangent(Math.toRadians(-5))
-                .splineToSplineHeading(row1, row1.heading)
+                .setTangent(Math.toRadians(-15))
+                .splineToSplineHeading(row3, row3.heading)
                 .splineToLinearHeading(new Pose2d(row3.position.x, 46, row3.heading.log()), row3.heading) // Intake
 
                 .strafeToLinearHeading(shootPose.position, shootPose.heading)
