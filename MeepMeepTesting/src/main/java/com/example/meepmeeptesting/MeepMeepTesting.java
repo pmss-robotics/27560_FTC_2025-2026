@@ -1,6 +1,9 @@
 package com.example.meepmeeptesting;
 
+import static com.example.meepmeeptesting.InternalPosition.flipY;
+
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.Rotation2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeBlueDark;
@@ -46,12 +49,12 @@ public class MeepMeepTesting {
         Pose2d row2 = new Pose2d(12, 32, Math.toRadians(90));
         Pose2d row3 = new Pose2d(36, 32, Math.toRadians(90));
 
-        Pose2d startPoseB = new Pose2d(-40, -54, Math.toRadians(180));
-        Pose2d shootPoseB = new Pose2d(-20, -20, Math.toRadians(225));
-        Pose2d gatePoseB = new Pose2d(0, -52, Math.toRadians(180));
-        Pose2d row1B = new Pose2d(-12,-26, Math.toRadians(270));
-        Pose2d row2B = new Pose2d(12, -26, Math.toRadians(270));
-        Pose2d row3B = new Pose2d(36, -26, Math.toRadians(270));
+        Pose2d startPoseB = flipY(startPose);
+        Pose2d shootPoseB = flipY(shootPose);
+        Pose2d gatePoseB = flipY(gatePose);
+        Pose2d row1B = flipY(row1);
+        Pose2d row2B = flipY(row2);
+        Pose2d row3B = flipY(row3);
 
         myRedBot.runAction(myRedBot.getDrive().actionBuilder(startPose)
                 .strafeToLinearHeading(shootPose.position, shootPose.heading)
@@ -90,27 +93,27 @@ public class MeepMeepTesting {
                 .strafeToLinearHeading(shootPoseB.position, shootPoseB.heading)
                 .waitSeconds(1) // Launch balls
 
-                .setTangent(Math.toRadians(0))
+                .setTangent(flipY(0))
                 .splineToSplineHeading(row1B, row1B.heading)
-                .splineToLinearHeading(new Pose2d(row1B.position.x, -46, row1B.heading.log()), row1B.heading) // Intake
+                .splineToLinearHeading(new Pose2d(row1B.position.x, 46, row1B.heading.log()), row1B.heading) // Intake
 
                 .splineToSplineHeading(gatePoseB, gatePoseB.heading)
                 .setTangent(gatePoseB.heading)
-                .strafeTo(new Vector2d(0, -56)) // Push Gate
+                .strafeTo(new Vector2d(0, 56)) // Push Gate
 
                 .strafeToLinearHeading(shootPoseB.position, shootPoseB.heading)
                 .waitSeconds(1) // Launch balls
 
-                .setTangent(Math.toRadians(25))
+                .setTangent(flipY(Math.toRadians(-5)))
                 .splineToSplineHeading(row2B, row2B.heading)
-                .splineToLinearHeading(new Pose2d(row2B.position.x, -46, row2B.heading.log()), row2B.heading) // Intake
+                .splineToLinearHeading(new Pose2d(row2B.position.x, 46, row2B.heading.log()), row2B.heading) // Intake
 
                 .strafeToLinearHeading(shootPoseB.position, shootPoseB.heading)
                 .waitSeconds(1) // Launch balls
 
-                .setTangent(Math.toRadians(5))
-                .splineToSplineHeading(row1B, row1B.heading)
-                .splineToLinearHeading(new Pose2d(row3B.position.x, -46, row3B.heading.log()), row3B.heading) // Intake
+                .setTangent(flipY(Math.toRadians(-15)))
+                .splineToSplineHeading(row3B, row3B.heading)
+                .splineToLinearHeading(new Pose2d(row3B.position.x, 46, row3B.heading.log()), row3B.heading) // Intake
 
                 .strafeToLinearHeading(shootPoseB.position, shootPoseB.heading)
                 .waitSeconds(1) // Launch balls
@@ -130,11 +133,8 @@ public class MeepMeepTesting {
                 //.splineToLinearHeading(shootPose, -shootPose.heading.log())
                 .build());
 
-        testBot.runAction(myBlueBot.getDrive().actionBuilder(startPoseB)
-                //.splineToLinearHeading(shootPose, -shootPose.heading.log())
-                .build());
 
-        meepMeep.setBackground(MeepMeep.Background.FIELD_DECODE_JUICE_BLACK)
+        meepMeep.setBackground(FIELD_DECODE_BLUE)
                 .setDarkMode(true)
                 .setBackgroundAlpha(0.95f)
                 .addEntity(myRedBot)

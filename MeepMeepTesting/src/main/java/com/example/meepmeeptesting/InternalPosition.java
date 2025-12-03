@@ -49,4 +49,9 @@ public class InternalPosition {
     public static Pose2d flipY(Pose2d oldPose) {
         return new Pose2d(new Vector2d(-oldPose.position.x, oldPose.position.y), new Rotation2d(-oldPose.heading.real, oldPose.heading.imag));
     }
+
+    public static Rotation2d flipY(double angle) {
+        Rotation2d rot = Rotation2d.fromDouble(angle);
+        return new Rotation2d(-rot.real, rot.imag);
+    }
 }
