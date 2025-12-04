@@ -3,10 +3,13 @@ package org.firstinspires.ftc.teamcode;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.CommandOpMode;
+import com.arcrobotics.ftclib.command.ConditionalCommand;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.RunCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
+import com.arcrobotics.ftclib.command.Subsystem;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.command.button.GamepadButton;
 import com.arcrobotics.ftclib.command.button.Trigger;
@@ -24,6 +27,8 @@ import org.firstinspires.ftc.teamcode.util.InternalPosition;
 import org.firstinspires.ftc.teamcode.util.StateTransfer;
 import org.firstinspires.ftc.teamcode.util.States;
 
+import java.util.Collections;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -36,6 +41,8 @@ public class TeleOp extends CommandOpMode{
     IntakeSubsystem intake;
     OuttakeSubsystem outtake;
     TurretSubsystem turret;
+    TurretVisionSubsystem turretVision;
+    boolean autoRotate;
     private InternalPosition positionCalc;
 
     public static double driveMult = 1;
@@ -51,23 +58,35 @@ public class TeleOp extends CommandOpMode{
         driver1 = new GamepadEx(gamepad1);
         driver2 = new GamepadEx(gamepad2);
 
+        try {
+            turretVision = new TurretVisionSubsystem(hardwareMap, telemetry, false);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        turretVision.enableDetection(true);
+
         drive = new DriveSubsystem(new MecanumDrive(hardwareMap, StateTransfer.pose), telemetry);
 
         intake = new IntakeSubsystem(hardwareMap, telemetry);
 
         outtake = new OuttakeSubsystem(hardwareMap, telemetry, true);
 
-        //turret = new TurretSubsystem(hardwareMap, telemetry);
+        turret = new TurretSubsystem(hardwareMap, telemetry);
 
         positionCalc = new InternalPosition(drive::getPose, () ->0);
 
         outtake.setDefaultCommand(new RunCommand(outtake::holdSpeed, outtake));
         intake.setDefaultCommand(new RunCommand(() ->intake.setPower(driver2.getLeftY()*12), intake));
 
+        turret.setDefaultCommand(
+                new RunCommand(() -> turret.turnTo(turretVision.update() + turret.getAngle()), turret, turretVision)
+        );
+
         // Drive
         DriveCommand driveCommand = new DriveCommand(drive,
                 () -> -driver1.getLeftX() * driveMult,
-                () -> -driver1.getLeftY() * driveMult,
+                () -> driver1.getLeftY() * driveMult,
                 () -> -driver1.getRightX() * driveMult,
                 true);
 
@@ -92,7 +111,13 @@ public class TeleOp extends CommandOpMode{
 
         // Position reset
         new GamepadButton(driver1, GamepadKeys.Button.A)
-                .whenPressed(new InstantCommand(() -> drive.drive.localizer.setPose(new Pose2d(0,0,0))));
+                .whenPressed(new InstantCommand(() -> drive.drive.localizer.setPose(new Pose2d(0,0, Math.toRadians(90)))));
+
+
+        // Return turret
+        new GamepadButton(driver1, GamepadKeys.Button.B)
+                .whenPressed(new InstantCommand(() -> turret.turn(0)));
+
 
         // Flywheel Control
         new GamepadButton(driver2, GamepadKeys.Button.A)

@@ -37,7 +37,9 @@ public class TurretTest extends CommandOpMode {
             throw new RuntimeException(e);
         }
 
-        turret.setDefaultCommand(new RunCommand(() -> turret.turn(turretVision.update()+turret.getAngle()), turret, turretVision));
+        turretVision.enableDetection(true);
+
+        turret.setDefaultCommand(new RunCommand(() -> turret.turnTo(turretVision.update()+turret.getAngle()), turret, turretVision));
 
         new GamepadButton(driver1, GamepadKeys.Button.A)
                 .whenPressed(new InstantCommand(() -> turret.turn(0)));
