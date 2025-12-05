@@ -30,7 +30,12 @@ public class OuttakeSubsystem extends SubsystemBase {
     public States.Flywheel flywheelState;
     public States.Kicker kickerState;
 
-    public static double flywheelVelocity = 12, flywheelMaxCurrent = 7, flywheelStallTimeout = 3000;
+    public static double flywheelVelocity = 8, flywheelMaxCurrent = 7, flywheelStallTimeout = 3000;
+    public static double P = 1, I=0, D=0, F=8;
+    private static final double TICKS_PER_REV = 28.0;
+    private static final double MAX_RPM = 6000.0;
+    private double targetRpm = 0.0;
+
 
     public static double lHome = 210, lKick = 100, rHome = 45, rKick = 155;
     private double speed;
@@ -54,6 +59,9 @@ public class OuttakeSubsystem extends SubsystemBase {
         }
 
         flywheel.setDirection(DcMotorEx.Direction.REVERSE);
+        flywheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        flywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        flywheel.setVelocityPIDFCoefficients(P, I, D, F);
         flywheel.setCurrentAlert(flywheelMaxCurrent, CurrentUnit.AMPS);
         stallTimer = new StallTimer(flywheelStallTimeout, ElapsedTime.Resolution.MILLISECONDS);
 
@@ -120,6 +128,11 @@ public class OuttakeSubsystem extends SubsystemBase {
         }
     }
 
+    public void setVelocityRpm(double rpm) {
+        targetRpm = rpm;
+        double ticksPerSec = (rpm * TICKS_PER_REV) / 60.0;
+        flywheel.setVelocity(ticksPerSec);
+    }
     public void kick() {
         kickerState = States.Kicker.kick;
         leftKicker.setPosition(scale(lKick));

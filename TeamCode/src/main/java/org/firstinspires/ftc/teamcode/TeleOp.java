@@ -85,7 +85,7 @@ public class TeleOp extends CommandOpMode{
 
         // Drive
         DriveCommand driveCommand = new DriveCommand(drive,
-                () -> -driver1.getLeftX() * driveMult,
+                () -> driver1.getLeftX() * driveMult,
                 () -> driver1.getLeftY() * driveMult,
                 () -> -driver1.getRightX() * driveMult,
                 true);
@@ -122,8 +122,9 @@ public class TeleOp extends CommandOpMode{
         // Flywheel Control
         new GamepadButton(driver2, GamepadKeys.Button.A)
                 .toggleWhenPressed(
-                        new InstantCommand(() -> outtake.setPower(OuttakeSubsystem.flywheelVelocity)),
-                        new InstantCommand(() -> outtake.setPower(0.0)));
+                        new InstantCommand(() -> outtake.setVelocityRpm(2250)),
+                        new InstantCommand(() -> outtake.setVelocityRpm(0))
+                );
 
 
         new GamepadButton(driver2, GamepadKeys.Button.DPAD_UP)
