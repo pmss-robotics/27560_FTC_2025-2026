@@ -76,7 +76,7 @@ public class TeleOp extends CommandOpMode{
 
         positionCalc = new InternalPosition(drive::getPose, () ->0);
 
-        outtake.setDefaultCommand(new RunCommand(outtake::holdSpeed, outtake));
+        //outtake.setDefaultCommand(new RunCommand(outtake::holdSpeed, outtake));
         intake.setDefaultCommand(new RunCommand(() ->intake.setPower(driver2.getLeftY()*12), intake));
 
         turret.setDefaultCommand(
@@ -122,7 +122,8 @@ public class TeleOp extends CommandOpMode{
         // Flywheel Control
         new GamepadButton(driver2, GamepadKeys.Button.A)
                 .toggleWhenPressed(
-                        new InstantCommand(() -> outtake.setVelocityRpm(2250)),
+                        //new InstantCommand(() -> outtake.setVelocityRpm(2900)), close shot
+                        new InstantCommand(() -> outtake.setVelocityRpm(3650)),
                         new InstantCommand(() -> outtake.setVelocityRpm(0))
                 );
 
