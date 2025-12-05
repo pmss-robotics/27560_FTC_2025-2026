@@ -101,13 +101,6 @@ public class TeleOp extends CommandOpMode{
 //                        )
 //                );
 
-        // To be used in macro
-        SequentialCommandGroup shiftBalls = new SequentialCommandGroup(
-                new WaitCommand(600),
-                new InstantCommand(() -> intake.setPower(12), intake),
-                new WaitCommand(600),
-                new InstantCommand(() -> intake.setPower(0), intake)
-        );
 
         // Position reset
         new GamepadButton(driver1, GamepadKeys.Button.A)

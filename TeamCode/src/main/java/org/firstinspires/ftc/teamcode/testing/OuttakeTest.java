@@ -28,19 +28,21 @@ public class OuttakeTest extends CommandOpMode{
         driver1 = new GamepadEx(gamepad1);
         driver2 = new GamepadEx(gamepad2);
 
-        OuttakeSubsystem flywheel = new OuttakeSubsystem(hardwareMap, telemetry, false);
+        OuttakeSubsystem outtake = new OuttakeSubsystem(hardwareMap, telemetry, false);
 
 
+        // Close shot
         new GamepadButton(driver2, GamepadKeys.Button.A)
-                .whenReleased(new InstantCommand(() -> flywheel.setPower(11.0)));
-
-        new GamepadButton(driver2, GamepadKeys.Button.B)
-                .whenReleased(new InstantCommand(() -> flywheel.setPower(0.0)));
-
-        new GamepadButton(driver2, GamepadKeys.Button.X)
                 .toggleWhenPressed(
-                        new InstantCommand(() -> flywheel.setPower(0.0)),
-                        new InstantCommand(() -> flywheel.setPower(12.0))
+                        new InstantCommand(() -> outtake.setVelocityRpm(2900)),
+                        new InstantCommand(() -> outtake.setVelocityRpm(0))
+                );
+
+        // Far shot
+        new GamepadButton(driver2, GamepadKeys.Button.Y)
+                .toggleWhenPressed(
+                        new InstantCommand(() -> outtake.setVelocityRpm(3650)),
+                        new InstantCommand(() -> outtake.setVelocityRpm(0))
                 );
 
     }

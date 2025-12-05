@@ -106,7 +106,7 @@ public class PreloadAuto extends CommandOpMode {
                 .splineTo(parkingSpot.position, parkingSpot.heading)
                 .build();
 
-        outtake.setDefaultCommand(new RunCommand(outtake::holdSpeed, outtake));
+        //outtake.setDefaultCommand(new RunCommand(outtake::holdSpeed, outtake));
         intake.setDefaultCommand(new RunCommand(intake::holdSpeed, intake));
 
         SequentialCommandGroup routine = new SequentialCommandGroup(

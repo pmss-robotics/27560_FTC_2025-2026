@@ -30,7 +30,7 @@ public class OuttakeSubsystem extends SubsystemBase {
     public States.Flywheel flywheelState;
     public States.Kicker kickerState;
 
-    public static double flywheelVelocity = 8, flywheelMaxCurrent = 7, flywheelStallTimeout = 3000;
+    public static double flywheelMaxCurrent = 7, flywheelStallTimeout = 3000;
     public static double P = 29.0, I=0, D=0.2, F=14;
     private static final double TICKS_PER_REV = 28.0;
     private static final double MAX_RPM = 6000.0;
@@ -81,52 +81,52 @@ public class OuttakeSubsystem extends SubsystemBase {
     }
 
 
-    public void toggleFlywheelState() {
-        switch (flywheelState) {
-            case stopped:
-                speed = flywheelVelocity;
-                flywheelState = States.Flywheel.spinning;
-                break;
-            case spinning:
-                speed = 0;
-                flywheelState = States.Flywheel.stopped;
-                break;
-        }
-        setPower(speed);
-    }
+//    public void toggleFlywheelState() {
+//        switch (flywheelState) {
+//            case stopped:
+//                speed = flywheelVelocity;
+//                flywheelState = States.Flywheel.spinning;
+//                break;
+//            case spinning:
+//                speed = 0;
+//                flywheelState = States.Flywheel.stopped;
+//                break;
+//        }
+//        setPower(speed);
+//    }
 
-    public void holdSpeed() {
-        //flywheel.setPower(speed);
+//    public void holdSpeed() {
+//        //flywheel.setPower(speed);
+//
+//
+//        flywheel.setPower(clamp(speed/voltageSensor.getVoltage(),0,1));
+//
+//        if (flywheel.isOverCurrent()) stallTimer.stalling();
+//        else stallTimer.motorOn();
+//
+//        if (stallTimer.shutOff()) flywheel.setMotorDisable();
+//
+//        telemetry.addData("flywheel voltage", speed);
+//        // telemetry.addData("flywheel current", flywheel.getCurrent(CurrentUnit.AMPS));
+//        telemetry.addData("flywheel stall", !flywheel.isMotorEnabled());
+//
+//    }
 
-
-        flywheel.setPower(clamp(speed/voltageSensor.getVoltage(),0,1));
-
-        if (flywheel.isOverCurrent()) stallTimer.stalling();
-        else stallTimer.motorOn();
-
-        if (stallTimer.shutOff()) flywheel.setMotorDisable();
-
-        telemetry.addData("flywheel voltage", speed);
-        // telemetry.addData("flywheel current", flywheel.getCurrent(CurrentUnit.AMPS));
-        telemetry.addData("flywheel stall", !flywheel.isMotorEnabled());
-
-    }
-
-    public void setPower(double power) {
-        //if (power > 0) speed = 1;
-        //else speed = 0;
-        speed = power;
-        power /= voltageSensor.getVoltage();
-
-        //flywheel.setPower(speed);
-        flywheel.setPower(clamp(power,-1.0,1.0));
-
-        if (power == 0) {
-            flywheelState = States.Flywheel.stopped;
-        } else {
-            flywheelState = States.Flywheel.spinning;
-        }
-    }
+//    public void setPower(double power) {
+//        //if (power > 0) speed = 1;
+//        //else speed = 0;
+//        speed = power;
+//        power /= voltageSensor.getVoltage();
+//
+//        //flywheel.setPower(speed);
+//        flywheel.setPower(clamp(power,-1.0,1.0));
+//
+//        if (power == 0) {
+//            flywheelState = States.Flywheel.stopped;
+//        } else {
+//            flywheelState = States.Flywheel.spinning;
+//        }
+//    }
 
     public void setVelocityRpm(double rpm) {
         targetRpm = rpm;
