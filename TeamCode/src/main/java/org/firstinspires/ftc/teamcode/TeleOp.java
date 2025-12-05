@@ -119,10 +119,16 @@ public class TeleOp extends CommandOpMode{
                 .whenPressed(new InstantCommand(() -> turret.turn(0)));
 
 
-        // Flywheel Control
+        // Close shot
         new GamepadButton(driver2, GamepadKeys.Button.A)
                 .toggleWhenPressed(
-                        //new InstantCommand(() -> outtake.setVelocityRpm(2900)), close shot
+                        new InstantCommand(() -> outtake.setVelocityRpm(2900)),
+                        new InstantCommand(() -> outtake.setVelocityRpm(0))
+                );
+
+        // Far shot
+        new GamepadButton(driver2, GamepadKeys.Button.Y)
+                .toggleWhenPressed(
                         new InstantCommand(() -> outtake.setVelocityRpm(3650)),
                         new InstantCommand(() -> outtake.setVelocityRpm(0))
                 );

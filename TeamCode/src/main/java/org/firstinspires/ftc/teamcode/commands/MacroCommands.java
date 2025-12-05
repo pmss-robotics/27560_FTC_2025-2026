@@ -12,11 +12,11 @@ import org.firstinspires.ftc.teamcode.util.States;
 
 @Config
 public class MacroCommands {
-    public static long initialFlywheelSpinUp = 5000, kickDelay = 500, intakeFeedTime = 400, spinUp = 800;
+    public static long initialFlywheelSpinUp = 5000, kickDelay = 500, intakeFeedTime = 800, spinUp = 200;
     public static Command launchSequence(OuttakeSubsystem outtake, IntakeSubsystem intake) {
         return new SequentialCommandGroup(
-                new InstantCommand(() -> outtake.setPower(OuttakeSubsystem.flywheelVelocity), outtake),
-                new WaitCommand(initialFlywheelSpinUp),
+                //new InstantCommand(() -> outtake.setPower(OuttakeSubsystem.flywheelVelocity), outtake),
+                //new WaitCommand(initialFlywheelSpinUp),
 
                 new InstantCommand(() -> intake.setPower(12), intake),
                 new WaitCommand(intakeFeedTime),
@@ -28,9 +28,9 @@ public class MacroCommands {
                 new InstantCommand(() -> intake.setPower(0), intake),
                 new WaitCommand(spinUp),
 
-                MacroCommands.kickSequence(outtake),
+                MacroCommands.kickSequence(outtake)
 
-                new InstantCommand(() -> outtake.setPower(0), outtake)
+                //new InstantCommand(() -> outtake.setPower(0), outtake)
         );
     }
     public static Command kickSequence(OuttakeSubsystem outtake) {
