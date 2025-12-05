@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.teamcode.util.InternalPosition.flipYIf;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Action;
@@ -79,37 +81,30 @@ public class PreloadAuto extends CommandOpMode {
     private void createPaths() {
         StateTransfer.alliance = prompter.get("alliance");
 
-        Pose2d startPose;
-        Pose2d shootingSpot;
-        Pose2d parkingSpot;
 
-        if (StateTransfer.alliance.equals(States.Alliance.Red)) {
-            startPose = new Pose2d(-40, 54, Math.toRadians(180));
-            shootingSpot = new Pose2d(-25, 25, Math.toRadians(135));
-            parkingSpot = new Pose2d(-10,29, Math.toRadians(90));
 
-        } else { // Blue
-            startPose = new Pose2d(40, 54, Math.toRadians(0));
-            shootingSpot = new Pose2d(25,25, Math.toRadians(45));
-            parkingSpot = new Pose2d(10,25, Math.toRadians(90));
-        }
+        boolean flip = StateTransfer.alliance.equals(States.Alliance.Blue);
+
+        Pose2d startPose = flipYIf(new Pose2d(-40, 54, Math.toRadians(180)), flip);
+        Pose2d shootingSpot = flipYIf(new Pose2d(-25, 25, Math.toRadians(135)), flip);
+        Pose2d parkingSpot = flipYIf(new Pose2d(-10,29, Math.toRadians(90)), flip);
+
 
         drive = new DriveSubsystem(new MecanumDrive(hardwareMap, startPose), telemetry);
 
         Action toShootingSpot = drive.actionBuilder(drive.getPose())
-                .strafeTo(shootingSpot.position)
-                //.turnTo(shootingSpot.heading)
+                .strafeToLinearHeading(shootingSpot.position, shootingSpot.heading)
                 .build();
 
 
         Supplier<Action> toPark = () -> drive.actionBuilder(drive.getPose())
-                .splineTo(parkingSpot.position, parkingSpot.heading)
+                .strafeToLinearHeading(parkingSpot.position, parkingSpot.heading)
                 .build();
 
-        //outtake.setDefaultCommand(new RunCommand(outtake::holdSpeed, outtake));
         intake.setDefaultCommand(new RunCommand(intake::holdSpeed, intake));
 
         SequentialCommandGroup routine = new SequentialCommandGroup(
+                new InstantCommand(() -> outtake.setVelocityRpm(OuttakeSubsystem.closeShot)),
 
                 // Drive from starting pose to shooting spot
                 new ActionCommand(toShootingSpot, Stream.of(drive).collect(Collectors.toSet())),

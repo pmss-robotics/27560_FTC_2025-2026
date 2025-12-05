@@ -31,6 +31,7 @@ public class OuttakeSubsystem extends SubsystemBase {
     public States.Kicker kickerState;
 
     public static double flywheelMaxCurrent = 7, flywheelStallTimeout = 3000;
+    public static double farShot = 3650, closeShot = 2900;
     public static double P = 29.0, I=0, D=0.2, F=14;
     private static final double TICKS_PER_REV = 28.0;
     private static final double MAX_RPM = 6000.0;

@@ -1,6 +1,7 @@
 package com.example.meepmeeptesting;
 
 import static com.example.meepmeeptesting.InternalPosition.flipY;
+import static com.example.meepmeeptesting.InternalPosition.flipYIf;
 
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Rotation2d;
@@ -42,12 +43,20 @@ public class MeepMeepTesting {
                 .setColorScheme(new ColorSchemeBlueDark())
                 .build();
 
-        Pose2d startPose = new Pose2d(-40, 54, Math.toRadians(180));
-        Pose2d shootPose = new Pose2d(-20, 20, Math.toRadians(135));
-        Pose2d gatePose = new Pose2d(0, 52, Math.toRadians(180));
-        Pose2d row1 = new Pose2d(-12,32, Math.toRadians(90));
-        Pose2d row2 = new Pose2d(12, 32, Math.toRadians(90));
-        Pose2d row3 = new Pose2d(36, 32, Math.toRadians(90));
+        boolean flip = false;
+
+        Pose2d startPose = flipYIf(new Pose2d(-40, 54, Math.toRadians(180)), flip);
+        Pose2d shootPose = flipYIf(new Pose2d(-10, 10, Math.toRadians(135)), flip);
+        Pose2d farPose = flipYIf(new Pose2d(56,9,Math.toRadians(180)), flip);
+        Pose2d gatePose = flipYIf(new Pose2d(0, 52, Math.toRadians(180)), flip);
+        Rotation2d row1Tangent = flipYIf(Rotation2d.exp(Math.toRadians(100)), flip);
+        Pose2d row1 = flipYIf(new Pose2d(-12,32, Math.toRadians(90)), flip);
+        Rotation2d row2Tangent = flipYIf(Rotation2d.exp(Math.toRadians(0)), flip);
+        Pose2d row2 = flipYIf(new Pose2d(12, 32, Math.toRadians(90)), flip);
+        Rotation2d row3Tangent = flipYIf(Rotation2d.exp(Math.toRadians(0)), flip);
+        Pose2d row3 = flipYIf(new Pose2d(36, 32, Math.toRadians(90)), flip);
+        Pose2d farPark = flipYIf(new Pose2d(40, 9, Math.toRadians(180)), flip);
+
 
         Pose2d startPoseB = flipY(startPose);
         Pose2d shootPoseB = flipY(shootPose);
@@ -60,9 +69,9 @@ public class MeepMeepTesting {
                 .strafeToLinearHeading(shootPose.position, shootPose.heading)
                 .waitSeconds(1) // Launch balls
 
-                .setTangent(Math.toRadians(0))
+                .setTangent(row1Tangent)
                 .splineToSplineHeading(row1, row1.heading)
-                .splineToLinearHeading(new Pose2d(row1.position.x, 46, row1.heading.log()), row1.heading) // Intake
+                .splineToLinearHeading(new Pose2d(row1.position.x, 48, row1.heading.log()), row1.heading) // Intake
 
                 .splineToSplineHeading(gatePose, gatePose.heading)
                 .setTangent(gatePose.heading)
@@ -71,54 +80,56 @@ public class MeepMeepTesting {
                 .strafeToLinearHeading(shootPose.position, shootPose.heading)
                 .waitSeconds(1) // Launch balls
 
-                .setTangent(Math.toRadians(-5))
+                .setTangent(row2Tangent)
                 .splineToSplineHeading(row2, row2.heading)
-                .splineToLinearHeading(new Pose2d(row2.position.x, 46, row2.heading.log()), row2.heading) // Intake
+                .splineToLinearHeading(new Pose2d(row2.position.x, 48, row2.heading.log()), row2.heading) // Intake
 
                 .strafeToLinearHeading(shootPose.position, shootPose.heading)
                 .waitSeconds(1) // Launch balls
 
-                .setTangent(Math.toRadians(-15))
+                .setTangent(row3Tangent)
                 .splineToSplineHeading(row3, row3.heading)
-                .splineToLinearHeading(new Pose2d(row3.position.x, 46, row3.heading.log()), row3.heading) // Intake
+                .splineToLinearHeading(new Pose2d(row3.position.x, 48, row3.heading.log()), row3.heading) // Intake
 
-                .strafeToLinearHeading(shootPose.position, shootPose.heading)
+                .strafeToLinearHeading(farPose.position, farPose.heading)
                 .waitSeconds(1) // Launch balls
 
-                .strafeToLinearHeading(gatePose.position, gatePose.heading)
+                //.strafeToLinearHeading(gatePose.position, gatePose.heading)
+                        .splineToLinearHeading(farPark, farPark.heading)
 
                 .build());
 
         myBlueBot.runAction(myBlueBot.getDrive().actionBuilder(startPoseB)
-                .strafeToLinearHeading(shootPoseB.position, shootPoseB.heading)
+                .strafeToLinearHeading(shootPose.position, shootPose.heading)
                 .waitSeconds(1) // Launch balls
 
-                .setTangent(flipY(0))
-                .splineToSplineHeading(row1B, row1B.heading)
-                .splineToLinearHeading(new Pose2d(row1B.position.x, 46, row1B.heading.log()), row1B.heading) // Intake
+                .setTangent(row1Tangent)
+                .splineToSplineHeading(row1, row1.heading)
+                .splineToLinearHeading(new Pose2d(row1.position.x, 48, row1.heading.log()), row1.heading) // Intake
 
-                .splineToSplineHeading(gatePoseB, gatePoseB.heading)
-                .setTangent(gatePoseB.heading)
+                .splineToSplineHeading(gatePose, gatePose.heading)
+                .setTangent(gatePose.heading)
                 .strafeTo(new Vector2d(0, 56)) // Push Gate
 
-                .strafeToLinearHeading(shootPoseB.position, shootPoseB.heading)
+                .strafeToLinearHeading(shootPose.position, shootPose.heading)
                 .waitSeconds(1) // Launch balls
 
-                .setTangent(flipY(Math.toRadians(-5)))
-                .splineToSplineHeading(row2B, row2B.heading)
-                .splineToLinearHeading(new Pose2d(row2B.position.x, 46, row2B.heading.log()), row2B.heading) // Intake
+                .setTangent(row2Tangent)
+                .splineToSplineHeading(row2, row2.heading)
+                .splineToLinearHeading(new Pose2d(row2.position.x, 48, row2.heading.log()), row2.heading) // Intake
 
-                .strafeToLinearHeading(shootPoseB.position, shootPoseB.heading)
+                .strafeToLinearHeading(shootPose.position, shootPose.heading)
                 .waitSeconds(1) // Launch balls
 
-                .setTangent(flipY(Math.toRadians(-15)))
-                .splineToSplineHeading(row3B, row3B.heading)
-                .splineToLinearHeading(new Pose2d(row3B.position.x, 46, row3B.heading.log()), row3B.heading) // Intake
+                .setTangent(row3Tangent)
+                .splineToSplineHeading(row3, row3.heading)
+                .splineToLinearHeading(new Pose2d(row3.position.x, 48, row3.heading.log()), row3.heading) // Intake
 
-                .strafeToLinearHeading(shootPoseB.position, shootPoseB.heading)
+                .strafeToLinearHeading(farPose.position, farPose.heading)
                 .waitSeconds(1) // Launch balls
 
-                .strafeToLinearHeading(gatePoseB.position, gatePoseB.heading)
+                //.strafeToLinearHeading(gatePose.position, gatePose.heading)
+                .splineToLinearHeading(farPark, farPark.heading)
                 .build());
 
         // Driving Testbot
@@ -134,12 +145,12 @@ public class MeepMeepTesting {
                 .build());
 
 
-        meepMeep.setBackground(FIELD_DECODE_BLUE)
+        meepMeep.setBackground(MeepMeep.Background.FIELD_DECODE_JUICE_BLACK)
                 .setDarkMode(true)
                 .setBackgroundAlpha(0.95f)
                 .addEntity(myRedBot)
                 //.addEntity(testBot)
-                .addEntity(myBlueBot)
+                //.addEntity(myBlueBot)
                 .start();
     }
 

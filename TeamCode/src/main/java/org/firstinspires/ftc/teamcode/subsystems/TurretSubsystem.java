@@ -23,7 +23,7 @@ public class TurretSubsystem extends SubsystemBase {
     ServoImplEx servo1;
     ServoImplEx servo2;
     private static double angle = 0;
-    public static double minAngle = -90, maxAngle = 90, turnDelay = 400, allowableError = 2;
+    public static double minAngle = -90, maxAngle = 90, turnDelay = 400, allowableError = 1;
     private ElapsedTime turnTimer;
 
     public TurretSubsystem (HardwareMap hardwareMap, Telemetry telemetry) {

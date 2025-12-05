@@ -50,8 +50,23 @@ public class InternalPosition {
         return new Pose2d(new Vector2d(-oldPose.position.x, oldPose.position.y), new Rotation2d(-oldPose.heading.real, oldPose.heading.imag));
     }
 
-    public static Rotation2d flipY(double angle) {
-        Rotation2d rot = Rotation2d.fromDouble(angle);
-        return new Rotation2d(-rot.real, rot.imag);
+    public static Rotation2d flipY(Rotation2d oldRotation) {
+        return new Rotation2d(-oldRotation.real, oldRotation.imag);
+    }
+
+    public static Pose2d flipYIf(Pose2d oldPose, boolean flip) {
+        if (flip) {
+            return flipY(oldPose);
+        } else {
+            return oldPose;
+        }
+    }
+
+    public static Rotation2d flipYIf(Rotation2d oldRotation, boolean flip) {
+        if (flip) {
+            return flipY(oldRotation);
+        } else {
+            return oldRotation;
+        }
     }
 }
