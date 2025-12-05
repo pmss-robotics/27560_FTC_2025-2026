@@ -129,10 +129,16 @@ public class TurretVisionSubsystem extends SubsystemBase {
             }
         }
 
-        switch (StateTransfer.alliance) {
-            case Red: return red;
-            case Blue: return blue;
+        try {
+            switch (StateTransfer.alliance) {
+                case Red: return red;
+                case Blue: return blue;
+            }
+        } catch (NullPointerException e) {
+            telemetry.addLine("Please set the alliance - i think its null for some reason");
+            telemetry.update();
         }
+
 
         //TODO: extra correction if you see other goal april tag
 
