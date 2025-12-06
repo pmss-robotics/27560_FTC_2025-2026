@@ -23,7 +23,7 @@ import org.firstinspires.ftc.teamcode.util.States;
 @Config
 public class OuttakeSubsystem extends SubsystemBase {
     private DcMotorEx flywheel;
-    private ServoImplEx leftKicker, rightKicker;
+    private ServoImplEx leftKicker, rightKicker, light;
     private Telemetry telemetry;
     private VoltageSensor voltageSensor;
 
@@ -31,7 +31,7 @@ public class OuttakeSubsystem extends SubsystemBase {
     public States.Kicker kickerState;
 
     public static double flywheelMaxCurrent = 7, flywheelStallTimeout = 3000;
-    public static double farShot = 3650, closeShot = 2920;
+    public static double farShot = 3600, closeShot = 2920;
     public static double P = 29.0, I=0, D=0.2, F=14;
     private static final double TICKS_PER_REV = 28.0;
     private static final double MAX_RPM = 6000.0;
@@ -53,6 +53,8 @@ public class OuttakeSubsystem extends SubsystemBase {
         this.telemetry = telemetry;
 
         flywheel = hardwareMap.get(DcMotorEx.class, "flywheel");
+
+        light = hardwareMap.get(ServoImplEx.class, "rgb");
 
         if (useKicker) {
             leftKicker = hardwareMap.get(ServoImplEx.class, "leftKicker");
@@ -155,5 +157,9 @@ public class OuttakeSubsystem extends SubsystemBase {
     private double scale(double angle){
         // angle in degrees
         return Range.scale(angle, 0, 300, 0, 1);
+    }
+
+    public void setColor(double position) {
+        light.setPosition(position);
     }
 }

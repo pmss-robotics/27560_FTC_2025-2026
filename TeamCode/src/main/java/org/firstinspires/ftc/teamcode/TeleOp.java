@@ -7,6 +7,7 @@ import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.ConditionalCommand;
 import com.arcrobotics.ftclib.command.InstantCommand;
+import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.RunCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.Subsystem;
@@ -41,6 +42,8 @@ public class TeleOp extends CommandOpMode{
     IntakeSubsystem intake;
     OuttakeSubsystem outtake;
     TurretSubsystem turret;
+
+
     TurretVisionSubsystem turretVision;
     boolean autoRotate;
     private InternalPosition positionCalc;
@@ -115,15 +118,28 @@ public class TeleOp extends CommandOpMode{
         // Close shot
         new GamepadButton(driver2, GamepadKeys.Button.A)
                 .toggleWhenPressed(
-                        new InstantCommand(() -> outtake.setVelocityRpm(2900)),
-                        new InstantCommand(() -> outtake.setVelocityRpm(0))
+                        new ParallelCommandGroup(
+                                new InstantCommand(() -> outtake.setVelocityRpm(2920)),
+                                new InstantCommand(() -> outtake.setColor(0.3))),
+                        new ParallelCommandGroup(
+                                new InstantCommand(() -> outtake.setVelocityRpm(0)),
+                                new InstantCommand(() -> outtake.setColor(0.0))
+
+                        )
+
                 );
 
         // Far shot
         new GamepadButton(driver2, GamepadKeys.Button.Y)
                 .toggleWhenPressed(
-                        new InstantCommand(() -> outtake.setVelocityRpm(3650)),
-                        new InstantCommand(() -> outtake.setVelocityRpm(0))
+                        new ParallelCommandGroup(
+                                new InstantCommand(() -> outtake.setVelocityRpm(3600)),
+                                new InstantCommand(() -> outtake.setColor(0.5))),
+                        new ParallelCommandGroup(
+                                new InstantCommand(() -> outtake.setVelocityRpm(0)),
+                                new InstantCommand(() -> outtake.setColor(0.0))
+
+                        )
                 );
 
 
