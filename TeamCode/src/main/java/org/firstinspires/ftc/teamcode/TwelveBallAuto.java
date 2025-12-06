@@ -106,7 +106,7 @@ public class TwelveBallAuto extends CommandOpMode {
         Pose2d farPose = flipYIf(new Pose2d(56,9,Math.toRadians(180)), flip);
         Pose2d gatePose = flipYIf(new Pose2d(0, 56, Math.toRadians(180)), flip);
         Rotation2d row1Tangent = flipYIf(Rotation2d.exp(Math.toRadians(100)), flip);
-        Pose2d row1 = flipYIf(new Pose2d(-3,32, Math.toRadians(90)), flip);
+        Pose2d row1 = flipYIf(new Pose2d(1,32, Math.toRadians(90)), flip);
         Rotation2d row2Tangent = flipYIf(Rotation2d.exp(Math.toRadians(0)), flip);
         Pose2d row2 = flipYIf(new Pose2d(25, 33, Math.toRadians(90)), flip);
         Rotation2d row3Tangent = flipYIf(Rotation2d.exp(Math.toRadians(0)), flip);
@@ -147,9 +147,9 @@ public class TwelveBallAuto extends CommandOpMode {
 
         // To gate and shoot
         Supplier<Action> path3 = () -> drive.actionBuilder(drive.getPose())
-                .splineToSplineHeading(gatePose, gatePose.heading)
-                .setTangent(gatePose.heading)
-                .strafeTo(new Vector2d(0, 56))
+                //.splineToSplineHeading(gatePose, gatePose.heading)
+                //.setTangent(gatePose.heading)
+                //.strafeTo(new Vector2d(0, 56))
                 .strafeToLinearHeading(shootPosetspmo.position, shootPosetspmo.heading)
 
                 .build();
@@ -158,7 +158,7 @@ public class TwelveBallAuto extends CommandOpMode {
         Supplier<Action> path4 = () -> drive.actionBuilder(drive.getPose())
                 .setTangent(row2Tangent)
                 .splineToSplineHeading(row2, row2.heading)
-                .splineToLinearHeading(new Pose2d(row2.position.x, 43, row2.heading.log()), row2.heading) // Intake
+                .splineToLinearHeading(new Pose2d(row2.position.x, 50, row2.heading.log()), row2.heading) // Intake
                 .build();
 
         // To shoot
@@ -204,7 +204,7 @@ public class TwelveBallAuto extends CommandOpMode {
                 new ParallelCommandGroup(
                         new SequentialCommandGroup(
                                 new InstantCommand(() -> intake.setPower(-12)),
-                                new WaitCommand(200),
+                                new WaitCommand(100),
                                 new InstantCommand(() -> intake.setPower(0)),
                                 new InstantCommand(() -> outtake.setVelocityRpm(OuttakeSubsystem.closeShot))
                         ),
@@ -225,7 +225,7 @@ public class TwelveBallAuto extends CommandOpMode {
                 new ParallelCommandGroup(
                         new SequentialCommandGroup(
                                 new InstantCommand(() -> intake.setPower(-12)),
-                                new WaitCommand(200),
+                                new WaitCommand(100),
                                 new InstantCommand(() -> intake.setPower(0)),
                                 new InstantCommand(() -> outtake.setVelocityRpm(OuttakeSubsystem.closeShot))
                         ),
@@ -248,7 +248,7 @@ public class TwelveBallAuto extends CommandOpMode {
                 new ParallelCommandGroup(
                         new SequentialCommandGroup(
                                 new InstantCommand(() -> intake.setPower(-12)),
-                                new WaitCommand(200),
+                                new WaitCommand(100),
                                 new InstantCommand(() -> intake.setPower(0)),
                                 new InstantCommand(() -> outtake.setVelocityRpm(OuttakeSubsystem.farShot))
                         ),

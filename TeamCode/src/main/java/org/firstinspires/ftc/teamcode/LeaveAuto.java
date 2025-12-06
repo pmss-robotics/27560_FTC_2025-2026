@@ -40,7 +40,6 @@ public class LeaveAuto extends CommandOpMode {
         prompter = new Prompter(this);
 
         prompter.prompt("alliance", new OptionPrompt<>("Select Alliance", States.Alliance.Red, States.Alliance.Blue))
-                .prompt("startDelay", new ValuePrompt("Starting Delay (ms)", 0, 20000, 0, 250))
                 .prompt("startPosition", new OptionPrompt<>("Starting Position", StartingPosition.goalSide, StartingPosition.farSide))
                 .onComplete(this::createPaths);
 
@@ -71,7 +70,7 @@ public class LeaveAuto extends CommandOpMode {
 
     private void createPaths() {
         StateTransfer.alliance = prompter.get("alliance");
-        StartingPosition startingPosition = prompter.get("startPose");
+        StartingPosition startingPosition = prompter.get("startPosition");
         Pose2d startPose;
         Pose2d parkingSpot;
 
@@ -101,7 +100,6 @@ public class LeaveAuto extends CommandOpMode {
                 .build();
 
         Command trajectory = new SequentialCommandGroup(
-                new WaitCommand(prompter.get("startDelay")),
                 new ActionCommand(trajectoryAction, Stream.of(drive).collect(Collectors.toSet()))
         );
 

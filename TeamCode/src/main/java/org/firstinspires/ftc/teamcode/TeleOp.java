@@ -82,12 +82,8 @@ public class TeleOp extends CommandOpMode{
         //outtake.setDefaultCommand(new RunCommand(outtake::holdSpeed, outtake));
         intake.setDefaultCommand(new RunCommand(() ->intake.setPower(driver2.getLeftY()*12), intake));
 
-        turret.setDefaultCommand(
-                new ConditionalCommand(
-                        new RunCommand(() -> turret.turnTo(turretVision.update()), turret, turretVision),
-                        new RunCommand(() -> turret.manualTurn(driver2.getRightX()), turret),
-                        ()-> turret.turretMode == States.TurretMode.autoAprilTag
-                )
+        turret.setDefaultCommand(new RunCommand(
+                () -> turret.turnTo(turretVision.update()), turret, turretVision)
         );
 
 
@@ -143,9 +139,8 @@ public class TeleOp extends CommandOpMode{
 
         // Enable/Disable manual mode
         new GamepadButton(driver2, GamepadKeys.Button.RIGHT_STICK_BUTTON)
-                .toggleWhenPressed(
-                        () -> turret.turretMode = States.TurretMode.manual,
-                        () -> turret.turretMode = States.TurretMode.autoAprilTag
+                .whileHeld(
+                        new InstantCommand(() -> turret.manualTurn(-driver2.getRightX()), turret)
                 );
 
         // Far shot

@@ -24,7 +24,7 @@ public class TurretSubsystem extends SubsystemBase {
     ServoImplEx servo1;
     ServoImplEx servo2;
     private static double angle = 0;
-    public static double minAngle = -90, maxAngle = 90, turnDelay = 400, allowableError = 1, manualAutoReset = 5000, turnMult = 0.1;
+    public static double minAngle = -90, maxAngle = 90, turnDelay = 400, allowableError = 1, manualAutoReset = 5000, turnMult = 0.05;
     private ElapsedTime turnTimer;
     private ElapsedTime manualTimer;
 
@@ -46,6 +46,9 @@ public class TurretSubsystem extends SubsystemBase {
         angle = 0;
         servo1.setPosition(scale(angle));
         servo2.setPosition(scale(angle));
+
+
+        turretMode = States.TurretMode.autoAprilTag;
 
         turnTimer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         manualTimer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
@@ -80,15 +83,17 @@ public class TurretSubsystem extends SubsystemBase {
      * @param offset the angle difference for the
      */
     public void turnTo(double offset) {
+        /*
         if (manualTimer.time() > manualAutoReset) {
             turretMode = States.TurretMode.autoAprilTag;
-        }
+        }*/
 
-        if (turretMode == States.TurretMode.autoAprilTag) {
+        //if (turretMode == States.TurretMode.autoAprilTag) {
             if (turnTimer.time() > turnDelay && Math.abs(offset) > allowableError) {
                 turn(offset);
+                turnTimer.reset();
             }
-        }
+        //}
     }
 
     public void manualTurn(double offset) {
@@ -100,7 +105,7 @@ public class TurretSubsystem extends SubsystemBase {
         }
         if (offset != 0) {
             manualTimer.reset();
-            turn(delta * offset * turnMult);
+            turn(delta * offset * turnMult + getAngle());
         }
     }
 
@@ -109,6 +114,6 @@ public class TurretSubsystem extends SubsystemBase {
     }
 
     private double scale(double angle) {
-        return Range.scale(angle, -216, 216, 0, 1);
+        return Range.scale(angle, -432, 432, 0, 1);
     }
 }

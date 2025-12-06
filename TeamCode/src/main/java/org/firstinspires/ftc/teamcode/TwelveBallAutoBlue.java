@@ -143,9 +143,9 @@ public class TwelveBallAutoBlue extends CommandOpMode {
 
         // To gate and shoot
         Supplier<Action> path3 = () -> drive.actionBuilder(drive.getPose())
-                .splineToSplineHeading(gatePose, gatePose.heading)
-                .setTangent(gatePose.heading)
-                .strafeTo(new Vector2d(0, 56))
+                //.splineToSplineHeading(gatePose, gatePose.heading)
+                //.setTangent(gatePose.heading)
+                //.strafeTo(new Vector2d(0, 56))
                 .strafeToLinearHeading(shootPosetspmo.position, shootPosetspmo.heading)
 
                 .build();
@@ -200,7 +200,7 @@ public class TwelveBallAutoBlue extends CommandOpMode {
                 new ParallelCommandGroup(
                         new SequentialCommandGroup(
                                 new InstantCommand(() -> intake.setPower(-12)),
-                                new WaitCommand(200),
+                                new WaitCommand(100),
                                 new InstantCommand(() -> intake.setPower(0)),
                                 new InstantCommand(() -> outtake.setVelocityRpm(OuttakeSubsystem.closeShot))
                         ),
@@ -221,7 +221,7 @@ public class TwelveBallAutoBlue extends CommandOpMode {
                 new ParallelCommandGroup(
                         new SequentialCommandGroup(
                                 new InstantCommand(() -> intake.setPower(-12)),
-                                new WaitCommand(200),
+                                new WaitCommand(100),
                                 new InstantCommand(() -> intake.setPower(0)),
                                 new InstantCommand(() -> outtake.setVelocityRpm(OuttakeSubsystem.closeShot))
                         ),
@@ -244,7 +244,7 @@ public class TwelveBallAutoBlue extends CommandOpMode {
                 new ParallelCommandGroup(
                         new SequentialCommandGroup(
                                 new InstantCommand(() -> intake.setPower(-12)),
-                                new WaitCommand(200),
+                                new WaitCommand(100),
                                 new InstantCommand(() -> intake.setPower(0)),
                                 new InstantCommand(() -> outtake.setVelocityRpm(OuttakeSubsystem.farShot))
                         ),
