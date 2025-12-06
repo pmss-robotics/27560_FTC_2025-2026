@@ -83,8 +83,13 @@ public class TeleOp extends CommandOpMode{
         intake.setDefaultCommand(new RunCommand(() ->intake.setPower(driver2.getLeftY()*12), intake));
 
         turret.setDefaultCommand(
-                new RunCommand(() -> turret.turnTo(turretVision.update() + turret.getAngle()), turret, turretVision)
+                new ConditionalCommand(
+                        new RunCommand(() -> turret.turnTo(turretVision.update()), turret, turretVision),
+                        new RunCommand(() -> turret.manualTurn(driver2.getRightX()), turret),
+                        ()-> turret.turretMode == States.TurretMode.autoAprilTag
+                )
         );
+
 
         // Drive
         DriveCommand driveCommand = new DriveCommand(drive,
@@ -110,6 +115,13 @@ public class TeleOp extends CommandOpMode{
                 .whenPressed(new InstantCommand(() -> drive.drive.localizer.setPose(new Pose2d(0,0, Math.toRadians(90)))));
 
 
+        // Drive Speed Toggle
+        new GamepadButton(driver1, GamepadKeys.Button.DPAD_UP)
+                .toggleWhenPressed(
+                        new InstantCommand(() -> driveMult = 0.5),
+                        new InstantCommand(() -> driveMult = 1)
+                );
+
         // Return turret
         new GamepadButton(driver1, GamepadKeys.Button.B)
                 .whenPressed(new InstantCommand(() -> turret.turn(0)));
@@ -127,6 +139,13 @@ public class TeleOp extends CommandOpMode{
 
                         )
 
+                );
+
+        // Enable/Disable manual mode
+        new GamepadButton(driver2, GamepadKeys.Button.RIGHT_STICK_BUTTON)
+                .toggleWhenPressed(
+                        () -> turret.turretMode = States.TurretMode.manual,
+                        () -> turret.turretMode = States.TurretMode.autoAprilTag
                 );
 
         // Far shot

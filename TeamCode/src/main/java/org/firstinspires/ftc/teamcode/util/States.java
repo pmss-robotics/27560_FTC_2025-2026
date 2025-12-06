@@ -41,4 +41,9 @@ public class States {
         Red,
         Blue
     }
+
+    public enum TurretMode {
+        autoAprilTag,
+        manual
+    }
 }

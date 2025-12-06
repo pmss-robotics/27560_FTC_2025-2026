@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.util.States;
 
 // https://docs.ftclib.org/ftclib/command-base/command-system/subsystems
 @Config
@@ -23,8 +24,12 @@ public class TurretSubsystem extends SubsystemBase {
     ServoImplEx servo1;
     ServoImplEx servo2;
     private static double angle = 0;
-    public static double minAngle = -90, maxAngle = 90, turnDelay = 400, allowableError = 1;
+    public static double minAngle = -90, maxAngle = 90, turnDelay = 400, allowableError = 1, manualAutoReset = 5000, turnMult = 0.1;
     private ElapsedTime turnTimer;
+    private ElapsedTime manualTimer;
+
+
+    public States.TurretMode turretMode = States.TurretMode.autoAprilTag;
 
     public TurretSubsystem (HardwareMap hardwareMap, Telemetry telemetry) {
         // initialize hardware here alongside other parameters
@@ -43,6 +48,7 @@ public class TurretSubsystem extends SubsystemBase {
         servo2.setPosition(scale(angle));
 
         turnTimer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+        manualTimer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     }
 
     @Override
@@ -71,11 +77,30 @@ public class TurretSubsystem extends SubsystemBase {
 
     /**
      * Use for relative angle positioning (with timer)
-     * @param angle
+     * @param offset the angle difference for the
      */
-    public void turnTo(double angle) {
-        if (turnTimer.time() > turnDelay && Math.abs(TurretSubsystem.angle - angle) > allowableError) {
-            turn(angle);
+    public void turnTo(double offset) {
+        if (manualTimer.time() > manualAutoReset) {
+            turretMode = States.TurretMode.autoAprilTag;
+        }
+
+        if (turretMode == States.TurretMode.autoAprilTag) {
+            if (turnTimer.time() > turnDelay && Math.abs(offset) > allowableError) {
+                turn(offset);
+            }
+        }
+    }
+
+    public void manualTurn(double offset) {
+        double delta;
+        if (manualTimer.time() > manualAutoReset) {
+            delta = 1;
+        } else {
+            delta = manualTimer.time();
+        }
+        if (offset != 0) {
+            manualTimer.reset();
+            turn(delta * offset * turnMult);
         }
     }
 
