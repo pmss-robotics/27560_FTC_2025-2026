@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.util.States;
 
 @Config
 public class MacroCommands {
-    public static long initialFlywheelSpinUp = 5000, kickDelay = 500, intakeFeedTime = 800, spinUp = 200;
+    public static long initialFlywheelSpinUp = 5000, kickDelay = 500, intakeFeedTime = 565, spinUp = 250;
     public static Command launchSequence(OuttakeSubsystem outtake, IntakeSubsystem intake) {
         return new SequentialCommandGroup(
                 //new InstantCommand(() -> outtake.setPower(OuttakeSubsystem.flywheelVelocity), outtake),
