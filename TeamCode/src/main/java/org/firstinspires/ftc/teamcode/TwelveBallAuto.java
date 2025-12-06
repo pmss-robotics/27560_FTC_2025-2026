@@ -39,15 +39,14 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Autonomous(name = "EmptyAuto", group = "Auto")
-@Disabled
+@Autonomous(name = "TwelveBallAuto", group = "Auto")
 public class TwelveBallAuto extends CommandOpMode {
 
     DriveSubsystem drive;
     OuttakeSubsystem outtake;
     IntakeSubsystem intake;
     TurretSubsystem turret;
-    TurretVisionSubsystem turretVision;
+    //TurretVisionSubsystem turretVision;
 
     private Prompter prompter;
 
@@ -104,23 +103,23 @@ public class TwelveBallAuto extends CommandOpMode {
         Pose2d startPose = flipYIf(new Pose2d(-40, 54, Math.toRadians(180)), flip);
         Pose2d shootPose = flipYIf(new Pose2d(-10, 10, Math.toRadians(135)), flip);
         Pose2d farPose = flipYIf(new Pose2d(56,9,Math.toRadians(180)), flip);
-        Pose2d gatePose = flipYIf(new Pose2d(0, 52, Math.toRadians(180)), flip);
+        Pose2d gatePose = flipYIf(new Pose2d(0, 54, Math.toRadians(180)), flip);
         Rotation2d row1Tangent = flipYIf(Rotation2d.exp(Math.toRadians(100)), flip);
-        Pose2d row1 = flipYIf(new Pose2d(-12,32, Math.toRadians(90)), flip);
+        Pose2d row1 = flipYIf(new Pose2d(-3,32, Math.toRadians(90)), flip);
         Rotation2d row2Tangent = flipYIf(Rotation2d.exp(Math.toRadians(0)), flip);
-        Pose2d row2 = flipYIf(new Pose2d(12, 32, Math.toRadians(90)), flip);
+        Pose2d row2 = flipYIf(new Pose2d(22, 32, Math.toRadians(90)), flip);
         Rotation2d row3Tangent = flipYIf(Rotation2d.exp(Math.toRadians(0)), flip);
-        Pose2d row3 = flipYIf(new Pose2d(36, 32, Math.toRadians(90)), flip);
+        Pose2d row3 = flipYIf(new Pose2d(40, 32, Math.toRadians(90)), flip);
         Pose2d farPark = flipYIf(new Pose2d(40, 9, Math.toRadians(180)), flip);
 
         drive = new DriveSubsystem(new MecanumDrive(hardwareMap, startPose), telemetry);
-        try {
-            turretVision = new TurretVisionSubsystem(hardwareMap, telemetry, false);
+        /*try {
+            //turretVision = new TurretVisionSubsystem(hardwareMap, telemetry, false);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
-        }
+        }*/
 
-        turretVision.enableDetection(true);
+        //turretVision.enableDetection(true);
 
         drive = new DriveSubsystem(new MecanumDrive(hardwareMap, startPose), telemetry);
 
@@ -142,7 +141,7 @@ public class TwelveBallAuto extends CommandOpMode {
         Supplier<Action> path2 = () -> drive.actionBuilder(drive.getPose())
                 .setTangent(row1Tangent)
                 .splineToSplineHeading(row1, row1.heading)
-                .splineToLinearHeading(new Pose2d(row1.position.x, 48, row1.heading.log()), row1.heading) // Intake
+                .splineToLinearHeading(new Pose2d(row1.position.x, 50, row1.heading.log()), row1.heading) // Intake
                 .build();
 
         // To gate and shoot
@@ -158,7 +157,7 @@ public class TwelveBallAuto extends CommandOpMode {
         Supplier<Action> path4 = () -> drive.actionBuilder(drive.getPose())
                 .setTangent(row2Tangent)
                 .splineToSplineHeading(row2, row2.heading)
-                .splineToLinearHeading(new Pose2d(row2.position.x, 48, row2.heading.log()), row2.heading) // Intake
+                .splineToLinearHeading(new Pose2d(row2.position.x, 50, row2.heading.log()), row2.heading) // Intake
                 .build();
 
         // To shoot
@@ -170,7 +169,7 @@ public class TwelveBallAuto extends CommandOpMode {
         Supplier<Action> path6 = () -> drive.actionBuilder(drive.getPose())
                 .setTangent(row3Tangent)
                 .splineToSplineHeading(row3, row3.heading)
-                .splineToLinearHeading(new Pose2d(row3.position.x, 46, row3.heading.log()), row3.heading) // Intake
+                .splineToLinearHeading(new Pose2d(row3.position.x, 50, row3.heading.log()), row3.heading) // Intake
                 .build();
 
         // To shoot
@@ -185,7 +184,7 @@ public class TwelveBallAuto extends CommandOpMode {
 
 
         Command trajectory = new SequentialCommandGroup(
-                new WaitCommand(prompter.get("startDelay")),
+                new WaitCommand(0),
 
                 // Go shoot
                 new InstantCommand(() -> outtake.setVelocityRpm(2900)),
