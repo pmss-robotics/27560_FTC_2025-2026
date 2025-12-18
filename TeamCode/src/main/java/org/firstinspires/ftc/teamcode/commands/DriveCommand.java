@@ -14,6 +14,7 @@ public class DriveCommand extends CommandBase {
     private final DoubleSupplier lx, ly, rx;
     private final boolean isFieldCentric;
 
+    public static boolean driving = true;
     public DriveCommand(DriveSubsystem drive, DoubleSupplier lx, DoubleSupplier ly, DoubleSupplier rx, boolean isFieldCentric) {
         this.drive = drive;
         this.lx = lx;
@@ -24,10 +25,12 @@ public class DriveCommand extends CommandBase {
     }
     @Override
     public void execute() {
-        if(isFieldCentric) {
-            drive.fieldCentric(lx.getAsDouble(), ly.getAsDouble(), rx.getAsDouble());
-        } else {
-            drive.robotCentric(lx.getAsDouble(), ly.getAsDouble(), rx.getAsDouble());
+        if (driving) {
+            if (isFieldCentric) {
+                drive.fieldCentric(lx.getAsDouble(), ly.getAsDouble(), rx.getAsDouble());
+            } else {
+                drive.robotCentric(lx.getAsDouble(), ly.getAsDouble(), rx.getAsDouble());
+            }
         }
     }
 }

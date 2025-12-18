@@ -19,10 +19,12 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.Exposur
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
 import org.firstinspires.ftc.robotcore.external.stream.CameraStreamSource;
 import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
+import org.firstinspires.ftc.teamcode.util.StateTransfer;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.VisionProcessor;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase;
+import org.firstinspires.ftc.vision.apriltag.AprilTagLibrary;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
@@ -33,44 +35,46 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Config // Makes variables changeable on the FTC dashboard
-public class VisionSubsystem extends SubsystemBase {
+public class TurretVisionSubsystem extends SubsystemBase {
 
     public static int EXPOSURE_MS = 6;
     public static int GAIN = 190;
 
-    private AprilTagProcessor aprilTag;
+    private AprilTagProcessor goalAprilTag;
+    private static AprilTagLibrary decodeGoal;
     private VisionPortal visionPortal;
     private Telemetry telemetry;
-    public VisionSubsystem(HardwareMap hardwareMap, Telemetry telemetry) throws InterruptedException {
+    private double red, blue;
+    public TurretVisionSubsystem(HardwareMap hardwareMap, Telemetry telemetry, boolean debug) throws InterruptedException {
         this.telemetry = telemetry;
 
         final CameraStreamProcessor dashboard = new CameraStreamProcessor();
-
-        aprilTag = new AprilTagProcessor.Builder()
-                .setDrawAxes(true)
-                .setDrawCubeProjection(true)
-                .setDrawTagOutline(true)
+        
+        goalAprilTag = new AprilTagProcessor.Builder()
+                .setDrawAxes(debug)
+                .setDrawCubeProjection(debug)
+                .setDrawTagOutline(debug)
                 .setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
-                .setTagLibrary(AprilTagGameDatabase.getDecodeTagLibrary())
+                .setTagLibrary(getDecodeGoalLibrary())
                 .build();
 
-        VisionPortal.Builder builder = new VisionPortal.Builder();
 
-        builder.setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"));
-        builder.enableLiveView(true);
-        builder.setAutoStopLiveView(true);
-        builder.addProcessor(aprilTag);
+        visionPortal = new VisionPortal.Builder()
+                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+                .setAutoStopLiveView(true)
+                .enableLiveView(debug)
+                .addProcessors(dashboard, goalAprilTag)
+                .build();
 
-        visionPortal = builder.build();
-
-        visionPortal.setProcessorEnabled(aprilTag, false);
-
+        visionPortal.setProcessorEnabled(goalAprilTag, false);
+        
         ElapsedTime elapsedTime = new ElapsedTime();
         VisionPortal.CameraState cameraState = visionPortal.getCameraState();
+
         while(elapsedTime.seconds() < 20 && cameraState != VisionPortal.CameraState.STREAMING){
             cameraState = visionPortal.getCameraState();
         }
-        telemetry.log().add("Time from build to streaming " + elapsedTime.milliseconds() + "ms");
+        telemetry.log().add("Time from build to streaming (Webcam2) " + elapsedTime.milliseconds() + "ms");
         if (visionPortal.getCameraState() == VisionPortal.CameraState.STREAMING) {
             ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
             if (exposureControl.getMode() != ExposureControl.Mode.Manual) {
@@ -83,8 +87,8 @@ public class VisionSubsystem extends SubsystemBase {
             gainControl.setGain(GAIN);
             sleep(20);
         }
-        FtcDashboard.getInstance().startCameraStream(dashboard, 15);
 
+        FtcDashboard.getInstance().startCameraStream(dashboard, 15);
     }
 
     @Override
@@ -94,12 +98,12 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     public void enableDetection(boolean enabled) {
-        visionPortal.setProcessorEnabled(aprilTag, enabled);
+        visionPortal.setProcessorEnabled(goalAprilTag, enabled);
     }
 
     private void telemetryAprilTag() {
 
-        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+        List<AprilTagDetection> currentDetections = goalAprilTag.getDetections();
         telemetry.addData("# AprilTags Detected", currentDetections.size());
 
         for (AprilTagDetection detection : currentDetections) {
@@ -110,6 +114,49 @@ public class VisionSubsystem extends SubsystemBase {
             }
 
         }
+    }
+
+    public double update() {
+        List<AprilTagDetection> currentDetections = goalAprilTag.getDetections();
+        double red = 0, blue = 0;
+
+        for (AprilTagDetection detection : currentDetections) {
+            if (detection.metadata != null) {
+                switch (detection.id) {
+                    case 20: blue = detection.ftcPose.bearing;
+                    case 24: red = detection.ftcPose.bearing;
+                }
+            }
+        }
+
+        try {
+            switch (StateTransfer.alliance) {
+                case Red: return red;
+                case Blue: return blue;
+            }
+        } catch (NullPointerException e) {
+            telemetry.addLine("Please set the alliance - i think its null for some reason");
+            telemetry.update();
+        }
+
+        //wwaj;eoifja;lweiufoiwue;rfu8w4yehf;uih;ewisdjflkwejf;lakwejsd;lj
+
+
+        //TODO: extra correction if you see other goal april tag
+
+        // Fallback
+        return Double.NaN;
+    }
+
+    private AprilTagLibrary getDecodeGoalLibrary() {
+        if (decodeGoal == null) {
+            AprilTagLibrary decodeLibrary = AprilTagGameDatabase.getDecodeTagLibrary();
+            decodeGoal = new AprilTagLibrary.Builder()
+                    .addTag(decodeLibrary.lookupTag(20))
+                    .addTag(decodeLibrary.lookupTag(24))
+                    .build();
+        }
+        return decodeGoal;
     }
 
     public static class CameraStreamProcessor implements VisionProcessor, CameraStreamSource {

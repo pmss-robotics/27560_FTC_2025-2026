@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.subsystems;
 import static com.acmerobotics.roadrunner.Math.clamp;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
@@ -26,6 +27,8 @@ public class IntakeSubsystem extends SubsystemBase {
 
         intakeMotor = hardwareMap.get(DcMotorEx.class, "intakeMotor");
 
+        intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
         currentState = States.Intake.stopped;
@@ -44,14 +47,21 @@ public class IntakeSubsystem extends SubsystemBase {
                 speed = -12;
         }
     }
-
-    public void holdSpeed() {
-        intakeMotor.setPower(speed);
-    }
     */
+    public void holdSpeed() {
+        intakeMotor.setPower(clamp(speed/voltageSensor.getVoltage(),-1,1));
+    }
+
 
     public void setPower(double power) {
-        power/=2;
+        //power/=2;
+        speed = power;
         intakeMotor.setPower(clamp(power/voltageSensor.getVoltage(),-1,1));
+        telemetry.addData("intake power", power);
+    }
+
+    @Override
+    public void periodic() {
+        telemetry.update();
     }
 }
