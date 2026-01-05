@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
-import static org.firstinspires.ftc.teamcode.pedroPathing.Drawing.drawDebug;
+import org.firstinspires.ftc.teamcode.pedroPathing.PedroDrawing;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
@@ -23,7 +23,7 @@ public class PedroDriveSubsystem extends SubsystemBase {
     public void periodic() {
         follower.update();
 
-        drawDebug(follower);
+        PedroDrawing.drawDebug(follower);
 
         Pose pose = getPose();
         telemetry.addData("x", pose.getX());

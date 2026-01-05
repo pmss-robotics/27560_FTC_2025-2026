@@ -11,12 +11,12 @@ import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.PoseHistory;
 
 /**
- * This is the Drawing class. It handles the drawing of stuff on Panels Dashboard, like the robot.
+ * This is the PedroDrawing class. It handles the drawing of stuff on Panels Dashboard, like the robot.
  *
  * @author Lazar - 19234
  * @version 1.1, 5/19/2025
  */
-public class Drawing {
+public class PedroDrawing {
     public static final double ROBOT_RADIUS = 9; // woah
     private static final FieldManager panelsField = PanelsField.INSTANCE.getField();
 

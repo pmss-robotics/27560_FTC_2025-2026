@@ -10,9 +10,6 @@ import static org.firstinspires.ftc.teamcode.pedroPathing.Tuning.telemetryM;
 import com.bylazar.configurables.PanelsConfigurables;
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.configurables.annotations.IgnoreConfigurable;
-import com.bylazar.field.FieldManager;
-import com.bylazar.field.PanelsField;
-import com.bylazar.field.Style;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
 import com.pedropathing.follower.Follower;
@@ -89,8 +86,7 @@ public class Tuning extends SelectableOpMode {
         poseHistory = follower.getPoseHistory();
 
         telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
-
-        Drawing.init();
+        PedroDrawing.init();
     }
 
     @Override
@@ -98,15 +94,15 @@ public class Tuning extends SelectableOpMode {
 
     public static void drawOnlyCurrent() {
         try {
-            Drawing.drawRobot(follower.getPose());
-            Drawing.sendPacket();
+            PedroDrawing.drawRobot(follower.getPose());
+            PedroDrawing.sendPacket();
         } catch (Exception e) {
-            throw new RuntimeException("Drawing failed " + e);
+            throw new RuntimeException("PedroDrawing failed " + e);
         }
     }
 
     public static void draw() {
-        Drawing.drawDebug(follower);
+        PedroDrawing.drawDebug(follower);
     }
 
     /** This creates a full stop of the robot by setting the drive motors to run at 0 power. */
