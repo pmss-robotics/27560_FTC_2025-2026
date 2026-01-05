@@ -5,7 +5,7 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Rotation2d;
 import com.acmerobotics.roadrunner.Twist2d;
 import com.acmerobotics.roadrunner.Vector2d;
-import com.arcrobotics.ftclib.geometry.Translation2d;
+import com.seattlesolvers.solverslib.geometry.Translation2d;
 
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
