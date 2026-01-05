@@ -7,12 +7,17 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.BezierLine;
+import com.pedropathing.geometry.Pose;
+import com.pedropathing.paths.PathChain;
 import com.seattlesolvers.solverslib.command.Command;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.command.WaitCommand;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
 import com.skeletonarmy.marrow.prompts.BooleanPrompt;
 import com.skeletonarmy.marrow.prompts.OptionPrompt;
 import com.skeletonarmy.marrow.prompts.Prompter;
@@ -21,7 +26,9 @@ import com.skeletonarmy.marrow.prompts.ValuePrompt;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.commands.ActionCommand;
 import org.firstinspires.ftc.teamcode.drive.MecanumDrive;
+import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.PedroDriveSubsystem;
 import org.firstinspires.ftc.teamcode.util.StateTransfer;
 import org.firstinspires.ftc.teamcode.util.States;
 
@@ -34,16 +41,20 @@ import java.util.stream.Stream;
 @Disabled
 public class EmptyAuto extends CommandOpMode {
 
-    DriveSubsystem drive;
+    PedroDriveSubsystem drive;
     private Prompter prompter;
 
     @Override
     public void initialize() {
+        super.reset();
+
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         telemetry.log().setDisplayOrder(Telemetry.Log.DisplayOrder.NEWEST_FIRST);
         telemetry.log().setCapacity(8);
 
         // Initialize subsystems here
+
+
 
         prompter = new Prompter(this);
 
@@ -57,24 +68,13 @@ public class EmptyAuto extends CommandOpMode {
     }
 
     @Override
-    public void runOpMode() throws InterruptedException {
-        // Initialize the robot and prompter
-        initialize();
+    public void initialize_loop() {
+        prompter.run();
+    }
 
-        while (!isStarted()) {
-            prompter.run();
-        }
-
-        waitForStart();
-
-        while (opModeIsActive() && !isStopRequested()) {
-            // This is the main loop where the command scheduler runs.
-            // prompter.run() should be placed inside this loop.c
-            run();
-
-        }
-        reset();
-        StateTransfer.pose = drive.getPose();
+    @Override
+    public void end() {
+        StateTransfer.posePedro = drive.follower.getPose();
     }
 
     private void createPaths() {
@@ -83,56 +83,27 @@ public class EmptyAuto extends CommandOpMode {
         StartingPosition startPosition = prompter.get("startPosition");
 
         // Init poses
-        Pose2d startPose = new Pose2d(-40, 54, Math.toRadians(180));
-        Pose2d shootPose = new Pose2d(-20, 20, Math.toRadians(135));
-        Pose2d gatePose = new Pose2d(0, 52, Math.toRadians(180));
-        Pose2d row1 = new Pose2d(-12,26, Math.toRadians(90));
-        Pose2d row2 = new Pose2d(12, 26, Math.toRadians(90));
-        Pose2d row3 = new Pose2d(36, 20, Math.toRadians(90));
+        Pose startPose = new Pose(-40, 54, Math.toRadians(180));
+        Pose shootPose = new Pose(-20, 20, Math.toRadians(135));
+        Pose gatePose = new Pose(0, 52, Math.toRadians(180));
+        Pose row1 = new Pose(-12,26, Math.toRadians(90));
+        Pose row2 = new Pose(12, 26, Math.toRadians(90));
+        Pose row3 = new Pose(36, 20, Math.toRadians(90));
 
 
         if (StateTransfer.alliance == States.Alliance.Blue) { //Map the poses when blue
             //startPose = flipY(startPose);
         }
 
-        drive = new DriveSubsystem(new MecanumDrive(hardwareMap, startPose), telemetry);
+        drive = new PedroDriveSubsystem(Constants.createFollower(hardwareMap), startPose, telemetry);
 
-        Action trajectoryAction = drive.actionBuilder(drive.getPose())
-                .strafeToLinearHeading(shootPose.position, shootPose.heading)
-                .waitSeconds(1) // Launch balls
-
-                .setTangent(Math.toRadians(0))
-                .splineToSplineHeading(row1, row1.heading)
-                .splineToLinearHeading(new Pose2d(row1.position.x, 46, row1.heading.log()), row1.heading) // Intake
-
-                .splineToSplineHeading(gatePose, gatePose.heading)
-                .setTangent(gatePose.heading)
-                .strafeTo(new Vector2d(0, 56)) // Push Gate
-
-                .strafeToLinearHeading(shootPose.position, shootPose.heading)
-                .waitSeconds(1) // Launch balls
-
-                .setTangent(Math.toRadians(-25))
-                .splineToSplineHeading(row2, row2.heading)
-                .splineToLinearHeading(new Pose2d(row2.position.x, 46, row2.heading.log()), row2.heading) // Intake
-
-                .strafeToLinearHeading(shootPose.position, shootPose.heading)
-                .waitSeconds(1) // Launch balls
-
-                .setTangent(Math.toRadians(-5))
-                .splineToSplineHeading(row1, row1.heading)
-                .splineToLinearHeading(new Pose2d(row3.position.x, 46, row3.heading.log()), row3.heading) // Intake
-
-                .strafeToLinearHeading(shootPose.position, shootPose.heading)
-                .waitSeconds(1) // Launch balls
-
-                .strafeToLinearHeading(gatePose.position, gatePose.heading)
-
+        PathChain paths = drive.follower.pathBuilder()
+                .addPath(new BezierLine(startPose, shootPose))
                 .build();
 
         Command trajectory = new SequentialCommandGroup(
                 new WaitCommand(prompter.get("startDelay")),
-                new ActionCommand(trajectoryAction, Stream.of(drive).collect(Collectors.toSet()))
+                new FollowPathCommand(drive.follower, paths)
         );
 
         schedule(trajectory);

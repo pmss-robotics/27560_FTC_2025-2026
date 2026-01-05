@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.util.InternalPosition.flipY;
 
+import androidx.annotation.OpenForTesting;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Action;
@@ -47,23 +49,12 @@ public class LeaveAuto extends CommandOpMode {
     }
 
     @Override
-    public void runOpMode() throws InterruptedException {
-        // Initialize the robot and prompter
-        initialize();
+    public void initialize_loop() {
+        prompter.run();
+    }
 
-        while (!isStarted()) {
-            prompter.run();
-        }
-
-        waitForStart();
-
-        while (opModeIsActive() && !isStopRequested()) {
-            // This is the main loop where the command scheduler runs.
-            // prompter.run() should be placed inside this loop.c
-            run();
-
-        }
-        reset();
+    @Override
+    public void end() {
         StateTransfer.pose = drive.getPose();
     }
 
