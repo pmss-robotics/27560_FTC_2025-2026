@@ -24,7 +24,7 @@ public class TurretSubsystem extends SubsystemBase {
     ServoImplEx servo1;
     ServoImplEx servo2;
     private static double angle = 0;
-    public static double minAngle = -90, maxAngle = 90, turnDelay = 400, allowableError = 1, manualAutoReset = 5000, turnMult = 0.05;
+    public static double minAngle = -90, maxAngle = 90, turnDelay = 100, allowableError = 1, manualAutoReset = 5000, turnMult = 0.2, manualMult = 0.25;
     private ElapsedTime turnTimer;
     private ElapsedTime manualTimer;
 
@@ -83,17 +83,10 @@ public class TurretSubsystem extends SubsystemBase {
      * @param offset the angle difference for the
      */
     public void turnTo(double offset) {
-        /*
-        if (manualTimer.time() > manualAutoReset) {
-            turretMode = States.TurretMode.autoAprilTag;
-        }*/
-
-        //if (turretMode == States.TurretMode.autoAprilTag) {
-            if (turnTimer.time() > turnDelay && Math.abs(offset) > allowableError) {
-                turn(offset);
-                turnTimer.reset();
-            }
-        //}
+        if (turnTimer.time() < 0.1) {
+            turn(Math.signum(offset) * Math.min(Math.abs(offset), turnMult*turnTimer.time()) + angle);
+        }
+        turnTimer.reset();
     }
 
     public void manualTurn(double offset) {
@@ -105,7 +98,7 @@ public class TurretSubsystem extends SubsystemBase {
         }
         if (offset != 0) {
             manualTimer.reset();
-            turn(delta * offset * turnMult + getAngle());
+            turn(delta * offset * manualMult* turnMult + getAngle());
         }
     }
 
