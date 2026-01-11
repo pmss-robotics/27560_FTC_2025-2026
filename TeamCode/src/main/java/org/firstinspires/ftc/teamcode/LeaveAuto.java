@@ -15,11 +15,13 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.skeletonarmy.marrow.prompts.OptionPrompt;
 import com.skeletonarmy.marrow.prompts.Prompter;
 import com.skeletonarmy.marrow.prompts.ValuePrompt;
+import com.skeletonarmy.marrow.settings.Settings;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.commands.ActionCommand;
 import org.firstinspires.ftc.teamcode.drive.MecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
+import org.firstinspires.ftc.teamcode.util.LoopTimer;
 import org.firstinspires.ftc.teamcode.util.StateTransfer;
 import org.firstinspires.ftc.teamcode.util.States;
 
@@ -30,6 +32,7 @@ import java.util.stream.Stream;
 public class LeaveAuto extends CommandOpMode {
 
     DriveSubsystem drive;
+    LoopTimer timer;
     private Prompter prompter;
 
     @Override
@@ -37,6 +40,10 @@ public class LeaveAuto extends CommandOpMode {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         telemetry.log().setDisplayOrder(Telemetry.Log.DisplayOrder.NEWEST_FIRST);
         telemetry.log().setCapacity(8);
+
+        if (Settings.get("loop_detect_mode", false)) {
+            timer = new LoopTimer(telemetry, "Main");
+        }
 
         prompter = new Prompter(this);
 

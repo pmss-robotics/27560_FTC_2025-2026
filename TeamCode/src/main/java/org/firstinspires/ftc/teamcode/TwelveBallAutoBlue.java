@@ -19,6 +19,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.skeletonarmy.marrow.prompts.OptionPrompt;
 import com.skeletonarmy.marrow.prompts.Prompter;
 import com.skeletonarmy.marrow.prompts.ValuePrompt;
+import com.skeletonarmy.marrow.settings.Settings;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.commands.ActionCommand;
@@ -28,6 +29,7 @@ import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.OuttakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.TurretSubsystem;
+import org.firstinspires.ftc.teamcode.util.LoopTimer;
 import org.firstinspires.ftc.teamcode.util.StateTransfer;
 import org.firstinspires.ftc.teamcode.util.States;
 
@@ -42,6 +44,7 @@ public class TwelveBallAutoBlue extends CommandOpMode {
     OuttakeSubsystem outtake;
     IntakeSubsystem intake;
     TurretSubsystem turret;
+    LoopTimer timer;
     //TurretVisionSubsystem turretVision;
 
     private Prompter prompter;
@@ -55,6 +58,9 @@ public class TwelveBallAutoBlue extends CommandOpMode {
         telemetry.log().setCapacity(8);
 
         // Initialize subsystems here
+        if (Settings.get("loop_detect_mode", false)) {
+            timer = new LoopTimer(telemetry, "Main");
+        }
 
         prompter = new Prompter(this);
 

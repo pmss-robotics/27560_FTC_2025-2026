@@ -20,6 +20,7 @@ import com.skeletonarmy.marrow.prompts.BooleanPrompt;
 import com.skeletonarmy.marrow.prompts.OptionPrompt;
 import com.skeletonarmy.marrow.prompts.Prompter;
 import com.skeletonarmy.marrow.prompts.ValuePrompt;
+import com.skeletonarmy.marrow.settings.Settings;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.commands.ActionCommand;
@@ -28,6 +29,7 @@ import org.firstinspires.ftc.teamcode.drive.MecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.OuttakeSubsystem;
+import org.firstinspires.ftc.teamcode.util.LoopTimer;
 import org.firstinspires.ftc.teamcode.util.StateTransfer;
 import org.firstinspires.ftc.teamcode.util.States;
 
@@ -41,6 +43,7 @@ public class PreloadAuto extends CommandOpMode {
     DriveSubsystem drive;
     OuttakeSubsystem outtake;
     IntakeSubsystem intake;
+    LoopTimer timer;
     private Prompter prompter;
 
     @Override
@@ -51,6 +54,9 @@ public class PreloadAuto extends CommandOpMode {
 
         prompter = new Prompter(this);
 
+        if (Settings.get("loop_detect_mode", false)) {
+            timer = new LoopTimer(telemetry, "Main");
+        }
         outtake = new OuttakeSubsystem(hardwareMap, telemetry, true);
         intake = new IntakeSubsystem(hardwareMap, telemetry);
 

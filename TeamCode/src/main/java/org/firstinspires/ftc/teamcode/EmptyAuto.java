@@ -18,10 +18,12 @@ import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
 import com.skeletonarmy.marrow.prompts.OptionPrompt;
 import com.skeletonarmy.marrow.prompts.Prompter;
 import com.skeletonarmy.marrow.prompts.ValuePrompt;
+import com.skeletonarmy.marrow.settings.Settings;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.subsystems.PedroDriveSubsystem;
+import org.firstinspires.ftc.teamcode.util.LoopTimer;
 import org.firstinspires.ftc.teamcode.util.StateTransfer;
 import org.firstinspires.ftc.teamcode.util.States;
 
@@ -35,6 +37,7 @@ import java.util.stream.Stream;
 public class EmptyAuto extends CommandOpMode {
 
     PedroDriveSubsystem drive;
+    LoopTimer timer;
     private Prompter prompter;
 
     @Override
@@ -46,7 +49,9 @@ public class EmptyAuto extends CommandOpMode {
         telemetry.log().setCapacity(8);
 
         // Initialize subsystems here
-
+        if (Settings.get("loop_detect_mode", false)) {
+            timer = new LoopTimer(telemetry, "Main");
+        }
 
 
         prompter = new Prompter(this);

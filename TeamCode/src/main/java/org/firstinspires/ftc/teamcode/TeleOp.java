@@ -17,6 +17,7 @@ import com.seattlesolvers.solverslib.command.button.Trigger;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 import com.seattlesolvers.solverslib.gamepad.TriggerReader;
+import com.skeletonarmy.marrow.settings.Settings;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.commands.ActionCommand;
@@ -25,6 +26,7 @@ import org.firstinspires.ftc.teamcode.commands.MacroCommands;
 import org.firstinspires.ftc.teamcode.drive.MecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystems.*;
 import org.firstinspires.ftc.teamcode.util.InternalPosition;
+import org.firstinspires.ftc.teamcode.util.LoopTimer;
 import org.firstinspires.ftc.teamcode.util.StateTransfer;
 import org.firstinspires.ftc.teamcode.util.States;
 
@@ -45,6 +47,7 @@ public class TeleOp extends CommandOpMode{
 
 
     TurretVisionSubsystem turretVision;
+    LoopTimer timer;
     boolean autoRotate;
     private InternalPosition positionCalc;
 
@@ -60,6 +63,10 @@ public class TeleOp extends CommandOpMode{
         telemetry.log().setCapacity(8);
         driver1 = new GamepadEx(gamepad1);
         driver2 = new GamepadEx(gamepad2);
+
+        if (Settings.get("loop_detect_mode", false)) {
+            timer = new LoopTimer(telemetry, "Main");
+        }
 
         try {
             turretVision = new TurretVisionSubsystem(hardwareMap, telemetry, false);
