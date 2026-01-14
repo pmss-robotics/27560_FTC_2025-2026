@@ -5,6 +5,8 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Rotation2d;
 import com.acmerobotics.roadrunner.Twist2d;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.pedropathing.geometry.Pose;
+import com.pedropathing.math.MathFunctions;
 import com.seattlesolvers.solverslib.geometry.Translation2d;
 
 import java.util.function.DoubleSupplier;
@@ -77,6 +79,26 @@ public static Vector2d redGoal = new Vector2d(-60,60), blueGoal = new Vector2d(6
             return flipY(oldRotation);
         } else {
             return oldRotation;
+        }
+    }
+
+    public static Pose mirrorIf(Pose oldPose, boolean flip) {
+        if (flip) {
+            return oldPose.mirror();
+        } else {
+            return oldPose;
+        }
+    }
+
+    public static Pose mirrorIf(double x, double y, double degrees, boolean flip) {
+        return mirrorIf(new Pose(x, y, Math.toRadians(degrees)), flip);
+    }
+
+    public static double mirrorAngleIf(double theta, boolean flip) {
+        if (flip) {
+            return MathFunctions.normalizeAngle(Math.PI - theta);
+        } else {
+            return theta;
         }
     }
     public double autoGetAngle(States.Alliance goal) {

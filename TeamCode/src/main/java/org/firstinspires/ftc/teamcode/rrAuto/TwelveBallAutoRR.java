@@ -1,5 +1,6 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.rrAuto;
 
+import static org.firstinspires.ftc.teamcode.util.InternalPosition.flipY;
 import static org.firstinspires.ftc.teamcode.util.InternalPosition.flipYIf;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -7,7 +8,6 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Rotation2d;
-import com.acmerobotics.roadrunner.Vector2d;
 import com.seattlesolvers.solverslib.command.Command;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.InstantCommand;
@@ -37,8 +37,8 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Autonomous(name = "TwelveBallAutoBlue", group = "Auto")
-public class TwelveBallAutoBlue extends CommandOpMode {
+@Autonomous(name = "TwelveBallAutoRR", group = "RR")
+public class TwelveBallAutoRR extends CommandOpMode {
 
     DriveSubsystem drive;
     OuttakeSubsystem outtake;
@@ -92,14 +92,14 @@ public class TwelveBallAutoBlue extends CommandOpMode {
 
         // Init poses
         Pose2d startPose = flipYIf(new Pose2d(-40, 54, Math.toRadians(180)), flip);
-        Pose2d shootPose = flipYIf(new Pose2d(-24, 24, Math.toRadians(135)), flip);
-        Pose2d shootPosetspmo = flipYIf(new Pose2d(-21, 21, Math.toRadians(132)), flip);
+        Pose2d shootPose = flipYIf(new Pose2d(-10, 10, Math.toRadians(135)), flip);
+        Pose2d shootPosetspmo = flipYIf(new Pose2d(-10, 10, Math.toRadians(125)), flip);
         Pose2d farPose = flipYIf(new Pose2d(56,9,Math.toRadians(180)), flip);
-        Pose2d gatePose = flipYIf(new Pose2d(-4, 56, Math.toRadians(180)), flip);
+        Pose2d gatePose = flipYIf(new Pose2d(0, 56, Math.toRadians(180)), flip);
         Rotation2d row1Tangent = flipYIf(Rotation2d.exp(Math.toRadians(100)), flip);
-        Pose2d row1 = flipYIf(new Pose2d(-14,45, Math.toRadians(90)), flip);
+        Pose2d row1 = flipYIf(new Pose2d(1,32, Math.toRadians(90)), flip);
         Rotation2d row2Tangent = flipYIf(Rotation2d.exp(Math.toRadians(0)), flip);
-        Pose2d row2 = flipYIf(new Pose2d(14, 45, Math.toRadians(90)), flip);
+        Pose2d row2 = flipYIf(new Pose2d(25, 33, Math.toRadians(90)), flip);
         Rotation2d row3Tangent = flipYIf(Rotation2d.exp(Math.toRadians(0)), flip);
         Pose2d row3 = flipYIf(new Pose2d(40, 32, Math.toRadians(90)), flip);
         Pose2d farPark = flipYIf(new Pose2d(40, 9, Math.toRadians(180)), flip);
@@ -133,7 +133,7 @@ public class TwelveBallAutoBlue extends CommandOpMode {
         Supplier<Action> path2 = () -> drive.actionBuilder(drive.getPose())
                 .setTangent(row1Tangent)
                 .splineToSplineHeading(row1, row1.heading)
-                .splineToLinearHeading(new Pose2d(row1.position.x, 72, row1.heading.log()), row1.heading) // Intake
+                .splineToLinearHeading(new Pose2d(row1.position.x, 50, row1.heading.log()), row1.heading) // Intake
                 .build();
 
         // To gate and shoot
@@ -149,7 +149,7 @@ public class TwelveBallAutoBlue extends CommandOpMode {
         Supplier<Action> path4 = () -> drive.actionBuilder(drive.getPose())
                 .setTangent(row2Tangent)
                 .splineToSplineHeading(row2, row2.heading)
-                .splineToLinearHeading(new Pose2d(row2.position.x, 61, row2.heading.log()), row2.heading) // Intake
+                .splineToLinearHeading(new Pose2d(row2.position.x, 50, row2.heading.log()), row2.heading) // Intake
                 .build();
 
         // To shoot

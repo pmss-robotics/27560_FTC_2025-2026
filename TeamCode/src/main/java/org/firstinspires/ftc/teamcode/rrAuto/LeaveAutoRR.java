@@ -1,63 +1,50 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.rrAuto;
 
 import static org.firstinspires.ftc.teamcode.util.InternalPosition.flipY;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-
-import com.pedropathing.geometry.BezierLine;
-import com.pedropathing.geometry.Pose;
-import com.pedropathing.paths.PathChain;
+import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.Pose2d;
 import com.seattlesolvers.solverslib.command.Command;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
-import com.seattlesolvers.solverslib.command.WaitCommand;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
 import com.skeletonarmy.marrow.prompts.OptionPrompt;
 import com.skeletonarmy.marrow.prompts.Prompter;
-import com.skeletonarmy.marrow.prompts.ValuePrompt;
 import com.skeletonarmy.marrow.settings.Settings;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
-import org.firstinspires.ftc.teamcode.subsystems.PedroDriveSubsystem;
+import org.firstinspires.ftc.teamcode.commands.ActionCommand;
+import org.firstinspires.ftc.teamcode.drive.MecanumDrive;
+import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
 import org.firstinspires.ftc.teamcode.util.LoopTimer;
 import org.firstinspires.ftc.teamcode.util.StateTransfer;
 import org.firstinspires.ftc.teamcode.util.States;
 
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Autonomous(name = "EmptyAuto", group = "Auto")
-@Disabled
-public class EmptyAuto extends CommandOpMode {
+@Autonomous(name = "LeaveAutoRR", group = "Auto")
+public class LeaveAutoRR extends CommandOpMode {
 
-    PedroDriveSubsystem drive;
+    DriveSubsystem drive;
     LoopTimer timer;
     private Prompter prompter;
 
     @Override
     public void initialize() {
-        super.reset();
-
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         telemetry.log().setDisplayOrder(Telemetry.Log.DisplayOrder.NEWEST_FIRST);
         telemetry.log().setCapacity(8);
 
-        // Initialize subsystems here
         if (Settings.get("loop_detect_mode", false)) {
             timer = new LoopTimer(telemetry, "Main");
         }
 
-
         prompter = new Prompter(this);
 
         prompter.prompt("alliance", new OptionPrompt<>("Select Alliance", States.Alliance.Red, States.Alliance.Blue))
-                .prompt("startDelay", new ValuePrompt("Starting Delay (ms)", 0, 20000, 0, 250))
                 .prompt("startPosition", new OptionPrompt<>("Starting Position", StartingPosition.goalSide, StartingPosition.farSide))
                 .onComplete(this::createPaths);
 
@@ -72,36 +59,42 @@ public class EmptyAuto extends CommandOpMode {
 
     @Override
     public void end() {
-        StateTransfer.posePedro = drive.follower.getPose();
+        StateTransfer.pose = drive.getPose();
     }
 
     private void createPaths() {
-        // Find starting position and generate paths
         StateTransfer.alliance = prompter.get("alliance");
-        StartingPosition startPosition = prompter.get("startPosition");
+        StartingPosition startingPosition = prompter.get("startPosition");
+        Pose2d startPose;
+        Pose2d parkingSpot;
 
-        // Init poses
-        Pose startPose = new Pose(-40, 54, Math.toRadians(180));
-        Pose shootPose = new Pose(-20, 20, Math.toRadians(135));
-        Pose gatePose = new Pose(0, 52, Math.toRadians(180));
-        Pose row1 = new Pose(-12,26, Math.toRadians(90));
-        Pose row2 = new Pose(12, 26, Math.toRadians(90));
-        Pose row3 = new Pose(36, 20, Math.toRadians(90));
-
-
-        if (StateTransfer.alliance == States.Alliance.Blue) { //Map the poses when blue
-            //startPose = flipY(startPose);
+        switch (startingPosition){
+            case goalSide:
+                startPose = new Pose2d(-40, 54, 0);
+                parkingSpot = new Pose2d(-28, 54, 0);
+                break;
+            case farSide:
+                startPose = new Pose2d(64,10, Math.toRadians(180));
+                parkingSpot = new Pose2d(54, 10, Math.toRadians(180));
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + startingPosition); // Android Studio wanted me to
         }
 
-        drive = new PedroDriveSubsystem(Constants.createFollower(hardwareMap), startPose, telemetry);
+        // Manually map the poses because I can't understand posemaps
+        if (StateTransfer.alliance == States.Alliance.Blue) {
+            startPose = flipY(startPose);
+            parkingSpot = flipY(parkingSpot);
+        }
 
-        PathChain path1 = drive.follower.pathBuilder()
-                .addPath(new BezierLine(startPose, shootPose))
+        drive = new DriveSubsystem(new MecanumDrive(hardwareMap, startPose), telemetry);
+
+        Action trajectoryAction = drive.actionBuilder(drive.getPose())
+                .splineTo(parkingSpot.position, parkingSpot.heading)
                 .build();
 
         Command trajectory = new SequentialCommandGroup(
-                new WaitCommand(prompter.get("startDelay")),
-                new FollowPathCommand(drive.follower, path1)
+                new ActionCommand(trajectoryAction, Stream.of(drive).collect(Collectors.toSet()))
         );
 
         schedule(trajectory);

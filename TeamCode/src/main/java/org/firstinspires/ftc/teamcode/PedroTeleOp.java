@@ -93,7 +93,7 @@ public class PedroTeleOp extends CommandOpMode{
         //drive.follower.setTeleOpDrive();
         // Drive
         PedroDriveCommand driveCommand = new PedroDriveCommand(drive,
-                () -> driver1.getLeftX() * driveMult,
+                () -> -driver1.getLeftX() * driveMult,
                 () -> driver1.getLeftY() * driveMult,
                 () -> -driver1.getRightX() * driveMult,
                 true);

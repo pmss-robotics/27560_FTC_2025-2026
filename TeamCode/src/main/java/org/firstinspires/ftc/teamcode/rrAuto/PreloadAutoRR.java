@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.rrAuto;
 
 import static org.firstinspires.ftc.teamcode.util.InternalPosition.flipYIf;
 
@@ -6,20 +6,13 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.Vector2d;
-import com.seattlesolvers.solverslib.command.Command;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.InstantCommand;
-import com.seattlesolvers.solverslib.command.ParallelCommandGroup;
 import com.seattlesolvers.solverslib.command.RunCommand;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
-import com.seattlesolvers.solverslib.command.Subsystem;
-import com.seattlesolvers.solverslib.command.WaitCommand;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.skeletonarmy.marrow.prompts.BooleanPrompt;
 import com.skeletonarmy.marrow.prompts.OptionPrompt;
 import com.skeletonarmy.marrow.prompts.Prompter;
-import com.skeletonarmy.marrow.prompts.ValuePrompt;
 import com.skeletonarmy.marrow.settings.Settings;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -37,8 +30,8 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Autonomous(name = "PreloadAuto", group = "Auto")
-public class PreloadAuto extends CommandOpMode {
+@Autonomous(name = "PreloadAutoRR", group = "RR")
+public class PreloadAutoRR extends CommandOpMode {
 
     DriveSubsystem drive;
     OuttakeSubsystem outtake;
