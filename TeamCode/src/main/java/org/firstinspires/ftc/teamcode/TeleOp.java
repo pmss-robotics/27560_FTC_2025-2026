@@ -90,7 +90,7 @@ public class TeleOp extends CommandOpMode{
         intake.setDefaultCommand(new RunCommand(() ->intake.setPower(driver2.getLeftY()*12), intake));
 
         turret.setDefaultCommand(new RunCommand(
-                () -> turret.turnTo(turretVision.update()), turret, turretVision)
+                () -> turret.turnTo(turretVision.update(), () -> !driver2.gamepad.right_stick_button), turret, turretVision)
         );
 
 

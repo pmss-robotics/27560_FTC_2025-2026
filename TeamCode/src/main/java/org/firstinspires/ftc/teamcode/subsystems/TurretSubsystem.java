@@ -13,6 +13,8 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.util.States;
 
+import java.util.function.Supplier;
+
 // https://docs.ftclib.org/ftclib/command-base/command-system/subsystems
 @Config
 public class TurretSubsystem extends SubsystemBase {
@@ -82,11 +84,13 @@ public class TurretSubsystem extends SubsystemBase {
      * Use for relative angle positioning (with timer)
      * @param offset the angle difference for the
      */
-    public void turnTo(double offset) {
-        if (turnTimer.time() < 0.1) {
-            turn(Math.signum(offset) * Math.min(Math.abs(offset), turnMult*turnTimer.time()) + angle);
+    public void turnTo(double offset, Supplier<Boolean> enabled) {
+        if (enabled.get()) {
+            if (turnTimer.time() < 0.1) {
+                turn(Math.signum(offset) * Math.min(Math.abs(offset), turnMult*turnTimer.time()) + angle);
+            }
+            turnTimer.reset();
         }
-        turnTimer.reset();
     }
 
     public void manualTurn(double offset) {

@@ -9,7 +9,6 @@ import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.seattlesolvers.solverslib.command.Command;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
@@ -51,7 +50,7 @@ public class LeaveAuto extends CommandOpMode {
         prompter = new Prompter(this);
 
         prompter.prompt("alliance", new OptionPrompt<>("Select Alliance", States.Alliance.Red, States.Alliance.Blue))
-                .prompt("startDelay", new ValuePrompt("Starting Delay (ms)", 0, 20000, 0, 250))
+                //.prompt("startDelay", new ValuePrompt("Starting Delay (ms)", 0, 20000, 0, 250))
                 .prompt("startPosition", new OptionPrompt<>("Starting Position", StartingPosition.goalSide, StartingPosition.farSide))
                 .onComplete(this::createPaths);
 
@@ -113,7 +112,7 @@ public class LeaveAuto extends CommandOpMode {
                 .build();
 
         Command trajectory = new SequentialCommandGroup(
-                new WaitCommand(prompter.get("startDelay")),
+                //new WaitCommand(prompter.get("startDelay").longValue()),
                 new FollowPathCommand(drive.follower, path1)
         );
 
