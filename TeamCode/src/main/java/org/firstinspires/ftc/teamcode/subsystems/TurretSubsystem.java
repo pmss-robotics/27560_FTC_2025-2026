@@ -96,7 +96,7 @@ public class TurretSubsystem extends SubsystemBase {
     public void manualTurn(double offset) {
         double delta;
         if (manualTimer.time() > manualAutoReset) {
-            delta = 1;
+            delta = 0.01;
         } else {
             delta = manualTimer.time();
         }

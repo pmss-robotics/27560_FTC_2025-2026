@@ -19,8 +19,8 @@ public class Constants {
             .mass(11.3) // Weight in kg
             .forwardZeroPowerAcceleration(-30.1598254254572162)
             .lateralZeroPowerAcceleration(-60.21756667831022)
-            .translationalPIDFCoefficients(new PIDFCoefficients(0.03,0,0.001,0))
-            .headingPIDFCoefficients(new PIDFCoefficients(0.7, 0.0, 0.075, 0.005))
+            .translationalPIDFCoefficients(new PIDFCoefficients(0.02,0,0.002,0.05))
+            .headingPIDFCoefficients(new PIDFCoefficients(0.5, 0.0, 0.03, 0.005))
             .drivePIDFCoefficients(new FilteredPIDFCoefficients(0,0,0,0,0));
 
     public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 1, 1);

@@ -47,7 +47,7 @@ public class PedroDriveCommand extends CommandBase {
             double headingError = MathFunctions.getTurnDirection(currentPose.getHeading(), target) * MathFunctions.getSmallestAngleDifference(currentPose.getHeading(), target);
             headingPIDF.updateError(headingError);
             double heading = MathFunctions.clamp(headingPIDF.run() + Constants.followerConstants.getCoefficientsHeadingPIDF().F * MathFunctions.getTurnDirection(currentPose.getHeading(), target), -1, 1);
-            drive.follower.setTeleOpDrive(ly.getAsDouble(), lx.getAsDouble(), heading, !isFieldCentric);
+            drive.follower.setTeleOpDrive(ly.getAsDouble(), lx.getAsDouble(), /*heading*/ 0, !isFieldCentric);
         }
 
     }
