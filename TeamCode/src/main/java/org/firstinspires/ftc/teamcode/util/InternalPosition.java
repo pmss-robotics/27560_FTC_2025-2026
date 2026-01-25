@@ -5,58 +5,70 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Rotation2d;
 import com.acmerobotics.roadrunner.Twist2d;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.pedropathing.ftc.FTCCoordinates;
+import com.pedropathing.geometry.FuturePose;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.math.MathFunctions;
+import com.pedropathing.math.Vector;
 import com.seattlesolvers.solverslib.geometry.Translation2d;
+import com.seattlesolvers.solverslib.util.InterpLUT;
 
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 @Config
 public class InternalPosition {
-    private Supplier<Pose2d> robot;
+    private Supplier<Pose> robot;
     private DoubleSupplier turret;
 
     public static double turretOffset = 56.93625/25.4, cameraOffset = 180.97618/25.4;
-public static Vector2d redGoal = new Vector2d(-60,60), blueGoal = new Vector2d(60, 60);
-
-    public InternalPosition(Supplier<Pose2d> robotPosition, DoubleSupplier turretRotation) {
+    public static Pose blueGoal = new Pose(12,134), redGoal = mirrorIf(blueGoal, true);
+    public InternalPosition(Supplier<Pose> robotPosition, DoubleSupplier turretRotation) {
         robot = robotPosition;
         turret = turretRotation;
     }
 
-
-    /**
-     * Camera's 2d Position in field coordinates from DriveLocalizer and
-     **/
-    public Pose2d turretCameraPosition() {
-        Pose2d robotPose = robot.get();
-        double robotHeading = robotPose.heading.toDouble();
-        double turretHeading = turret.getAsDouble();
-
-        return new Pose2d(
-                robotPose.position
-                        .plus(fromPolar(turretOffset, robotHeading))
-                        .plus(fromPolar(cameraOffset, robotHeading + turretHeading)),
-                robotHeading + turret.getAsDouble()
-        );
+    public double getDistance() {
+        return robot.get().distanceFrom(goal());
     }
 
-    public static Vector2d fromPolar(double distance, double angle) {
-        return new Vector2d(distance * Math.cos(angle), distance * Math.sin(angle));
+    public double getTurretAngle() {
+        Pose r = robot.get();
+        Pose g = goal();
+        return Math.atan2(g.getY() - r.getY(), g.getX() - r.getX());
     }
 
-    public static double getAngle(Pose2d robot, Vector2d object) {
-        return Math.atan2(object.y - robot.position.y, object.x - robot.position.x);
-    }
-
-    public static double getAngle(Pose2d robot, States.Alliance goal) {
-        switch (goal) {
-            case Red: return getAngle(robot, redGoal);
-            case Blue: return getAngle(robot, blueGoal);
+    public Pose goal() {
+        switch (StateTransfer.alliance) {
+            case Red: return redGoal;
+            case Blue: return blueGoal;
         }
-        return 0;
+        return null;
     }
+
+    public static Pose mirrorIf(Pose oldPose, boolean flip) {
+        if (flip) {
+            return oldPose.mirror().withX(141.5 - oldPose.getX());
+        } else {
+            return oldPose;
+        }
+    }
+
+    public static Pose mirrorIf(double x, double y, double degrees, boolean flip) {
+        return mirrorIf(new Pose(x, y, Math.toRadians(degrees)), flip);
+    }
+
+    public static double mirrorAngleIf(double theta, boolean flip) {
+        if (flip) {
+            return MathFunctions.normalizeAngle(Math.PI - theta);
+        } else {
+            return theta;
+        }
+    }
+
+
+    // RR Methods
+    //
 
     public static Pose2d flipY(Pose2d oldPose) {
         return new Pose2d(new Vector2d(-oldPose.position.x, oldPose.position.y), new Rotation2d(-oldPose.heading.real, oldPose.heading.imag));
@@ -80,28 +92,5 @@ public static Vector2d redGoal = new Vector2d(-60,60), blueGoal = new Vector2d(6
         } else {
             return oldRotation;
         }
-    }
-
-    public static Pose mirrorIf(Pose oldPose, boolean flip) {
-        if (flip) {
-            return oldPose.mirror();
-        } else {
-            return oldPose;
-        }
-    }
-
-    public static Pose mirrorIf(double x, double y, double degrees, boolean flip) {
-        return mirrorIf(new Pose(x, y, Math.toRadians(degrees)), flip);
-    }
-
-    public static double mirrorAngleIf(double theta, boolean flip) {
-        if (flip) {
-            return MathFunctions.normalizeAngle(Math.PI - theta);
-        } else {
-            return theta;
-        }
-    }
-    public double autoGetAngle(States.Alliance goal) {
-        return getAngle(robot.get(), goal);
     }
 }

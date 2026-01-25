@@ -46,7 +46,7 @@ public class DriveOnly extends CommandOpMode{
         telemetry.update();
 
         DriveSubsystem drive = new DriveSubsystem(new MecanumDrive(hardwareMap, new Pose2d(0, 0, Math.toRadians(90))), telemetry);
-        InternalPosition positionCalc = new InternalPosition(drive::getPose, ()->0);
+        //InternalPosition positionCalc = new InternalPosition(drive::getPose, ()->0);
         // Drive
         DriveCommand driveCommand = new DriveCommand(drive,
                 () -> -driver1.getLeftX() * driveMult,

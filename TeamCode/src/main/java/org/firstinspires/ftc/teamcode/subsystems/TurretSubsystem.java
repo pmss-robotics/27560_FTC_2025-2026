@@ -111,6 +111,8 @@ public class TurretSubsystem extends SubsystemBase {
     }
 
     private double scale(double angle) {
-        return Range.scale(angle, -432, 432, 0, 1);
+        // 5 turn servo geared 24:100
+        // 1800 -> 432, from -216 to 216
+        return Range.scale(angle, -216, 216, 0, 1);
     }
 }

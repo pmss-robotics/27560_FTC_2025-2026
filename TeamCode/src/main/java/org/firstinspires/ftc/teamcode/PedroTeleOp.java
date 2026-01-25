@@ -69,7 +69,7 @@ public class PedroTeleOp extends CommandOpMode{
             throw new RuntimeException(e);
         }
 
-        turretVision.enableDetection(true);
+        //turretVision.enableDetection(true);
 
         drive = new PedroDriveSubsystem(Constants.createFollower(hardwareMap), StateTransfer.posePedro, telemetry);
 
@@ -79,9 +79,9 @@ public class PedroTeleOp extends CommandOpMode{
 
         turret = new TurretSubsystem(hardwareMap, telemetry);
 
-        //positionCalc = new InternalPosition(drive::getPose, () ->0);
+        positionCalc = new InternalPosition(drive::getPose, turret::getAngle);
 
-        //outtake.setDefaultCommand(new RunCommand(outtake::holdSpeed, outtake));
+        outtake.setDefaultCommand(new RunCommand(outtake::holdSpeed, outtake));
         intake.setDefaultCommand(new RunCommand(() ->intake.setPower(driver2.getLeftY()*12), intake));
 
         turret.setDefaultCommand(new RunCommand(

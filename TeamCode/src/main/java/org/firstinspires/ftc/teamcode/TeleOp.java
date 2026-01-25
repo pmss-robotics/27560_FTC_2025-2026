@@ -84,9 +84,9 @@ public class TeleOp extends CommandOpMode{
 
         turret = new TurretSubsystem(hardwareMap, telemetry);
 
-        positionCalc = new InternalPosition(drive::getPose, () ->0);
+        //positionCalc = new InternalPosition(drive::getPose, () ->0);
 
-        //outtake.setDefaultCommand(new RunCommand(outtake::holdSpeed, outtake));
+        outtake.setDefaultCommand(new RunCommand(outtake::holdSpeed, outtake));
         intake.setDefaultCommand(new RunCommand(() ->intake.setPower(driver2.getLeftY()*12), intake));
 
         turret.setDefaultCommand(new RunCommand(
