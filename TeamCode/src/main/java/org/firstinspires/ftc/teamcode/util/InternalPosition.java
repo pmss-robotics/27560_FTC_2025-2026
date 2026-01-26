@@ -35,15 +35,20 @@ public class InternalPosition {
     public double getTurretAngle() {
         Pose r = robot.get();
         Pose g = goal();
-        return Math.atan2(g.getY() - r.getY(), g.getX() - r.getX());
+        return Math.atan2(g.getY() - r.getY(), g.getX() - r.getX()) - r.getHeading();
     }
 
-    public Pose goal() {
+    public static double getTurretAngle(Pose robot) {
+        Pose g = goal();
+        return Math.atan2(g.getY() - robot.getY(), g.getX() - robot.getX()) - robot.getHeading();
+    }
+
+    public static Pose goal() {
         switch (StateTransfer.alliance) {
             case Red: return redGoal;
             case Blue: return blueGoal;
         }
-        return null;
+        return new Pose(Double.NaN,Double.NaN,Double.NaN);
     }
 
     public static Pose mirrorIf(Pose oldPose, boolean flip) {

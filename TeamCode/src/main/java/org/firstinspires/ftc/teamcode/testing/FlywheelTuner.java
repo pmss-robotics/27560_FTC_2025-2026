@@ -15,6 +15,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.subsystems.OuttakeSubsystem;
 import org.firstinspires.ftc.teamcode.util.LoopTimer;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Config
@@ -49,17 +50,10 @@ public class FlywheelTuner extends CommandOpMode {
         outtake.setDefaultCommand(new RunCommand(outtake::holdSpeed, outtake));
 
         modeIndex = 0;
-        modes.add("F");
-        modes.add("P");
-        modes.add("D");
-        modes.add("I");
+        modes = Arrays.asList("F", "P", "D", "I");
 
         incrementIndex = 0;
-        increments.add(10.0);
-        increments.add(1.0);
-        increments.add(0.1);
-        increments.add(0.01);
-        increments.add(0.001);
+        increments = Arrays.asList(10.0, 1.0, 0.1, 0.01, 0.001);
 
         mode = telemetry.addData("Mode", "%s %f", modes.get(modeIndex), increments.get(incrementIndex));
         pidf = telemetry.addData("PIDF","P %f I %f D %f F %f", OuttakeSubsystem.P, OuttakeSubsystem.I, OuttakeSubsystem.D, OuttakeSubsystem.F);

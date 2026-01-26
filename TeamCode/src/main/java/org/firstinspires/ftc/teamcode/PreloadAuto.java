@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.teamcode.util.InternalPosition.mirrorIf;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 
@@ -8,6 +10,9 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.seattlesolvers.solverslib.command.Command;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
+import com.seattlesolvers.solverslib.command.ConditionalCommand;
+import com.seattlesolvers.solverslib.command.InstantCommand;
+import com.seattlesolvers.solverslib.command.RunCommand;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.command.WaitCommand;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -19,11 +24,13 @@ import com.skeletonarmy.marrow.prompts.ValuePrompt;
 import com.skeletonarmy.marrow.settings.Settings;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.commands.MacroCommands;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.OuttakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.PedroDriveSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.TurretSubsystem;
+import org.firstinspires.ftc.teamcode.util.InternalPosition;
 import org.firstinspires.ftc.teamcode.util.LoopTimer;
 import org.firstinspires.ftc.teamcode.util.StateTransfer;
 import org.firstinspires.ftc.teamcode.util.States;
@@ -51,12 +58,16 @@ public class PreloadAuto extends CommandOpMode {
         if (Settings.get("loop_detect_mode", false)) {
             timer = new LoopTimer(telemetry, "Main");
         }
+        outtake = new OuttakeSubsystem(hardwareMap, telemetry, true);
+        intake = new IntakeSubsystem(hardwareMap, telemetry);
+        turret = new TurretSubsystem(hardwareMap, telemetry);
 
+        outtake.setDefaultCommand(new RunCommand(outtake::holdSpeed, outtake));
+        intake.setDefaultCommand(new RunCommand(intake::holdSpeed, intake));
 
         prompter = new Prompter(this);
 
         prompter.prompt("alliance", new OptionPrompt<>("Select Alliance", States.Alliance.Red, States.Alliance.Blue))
-                .prompt("startDelay", new ValuePrompt("Starting Delay (ms)", 0, 20000, 0, 250))
                 .prompt("startPosition", new OptionPrompt<>("Starting Position", StartingPosition.goalSide, StartingPosition.farSide))
                 .onComplete(this::createPaths);
 
@@ -79,31 +90,59 @@ public class PreloadAuto extends CommandOpMode {
         StateTransfer.alliance = prompter.get("alliance");
         StartingPosition startPosition = prompter.get("startPosition");
 
+        boolean flip = StateTransfer.alliance == States.Alliance.Red;
+
         // Init poses
-        Pose startPose = new Pose(-40, 54, Math.toRadians(180));
-        Pose shootPose = new Pose(-20, 20, Math.toRadians(135));
-        Pose gatePose = new Pose(0, 52, Math.toRadians(180));
-        Pose row1 = new Pose(-12,26, Math.toRadians(90));
-        Pose row2 = new Pose(12, 26, Math.toRadians(90));
-        Pose row3 = new Pose(36, 20, Math.toRadians(90));
-
-
-        if (StateTransfer.alliance == States.Alliance.Blue) { //Map the poses when blue
-            //startPose = flipY(startPose);
+        Pose startPose, shootPose, parkPose;
+        switch (startPosition) {
+            case farSide:
+                startPose = mirrorIf(57, 9, 90, flip);
+                shootPose = mirrorIf(57, 9, 90, flip);
+                parkPose = mirrorIf(57, 36, 36, flip);
+                break;
+            case goalSide:
+                startPose = mirrorIf(23, 120, 180, flip);
+                shootPose = mirrorIf(48, 96, 180, flip);
+                parkPose = mirrorIf(48, 120, 90, flip);
+                break;
+            default: throw new RuntimeException("no poses");
         }
+
 
         drive = new PedroDriveSubsystem(Constants.createFollower(hardwareMap), startPose, telemetry);
 
         PathChain path1 = drive.follower.pathBuilder()
                 .addPath(new BezierLine(startPose, shootPose))
+                .setLinearHeadingInterpolation(startPose.getHeading(), shootPose.getHeading())
                 .build();
 
-        Command trajectory = new SequentialCommandGroup(
-                new WaitCommand(prompter.get("startDelay")),
-                new FollowPathCommand(drive.follower, path1)
+        PathChain path2 = drive.follower.pathBuilder()
+                .addPath(new BezierLine(shootPose, parkPose))
+                .setLinearHeadingInterpolation(shootPose.getHeading(), parkPose.getHeading())
+                .build();
+
+
+        Command sequence = new SequentialCommandGroup(
+
+                new InstantCommand(() -> outtake.setVelocityRpm(2900), outtake),
+                new InstantCommand(() -> turret.turn(InternalPosition.getTurretAngle(shootPose))),
+
+                 // Drive to the shooting position
+
+                new ConditionalCommand(
+                        new FollowPathCommand(drive.follower, path1), //Drive
+                        new WaitCommand(1000),
+                        () -> startPosition == StartingPosition.goalSide
+                ),
+
+                MacroCommands.launchSequence(outtake, intake), // Launch
+
+                new FollowPathCommand(drive.follower, path2, false), // Drive to park, disable flywheel
+
+                new InstantCommand(() -> outtake.setVelocityRpm(0), outtake)
         );
 
-        schedule(trajectory);
+        schedule(sequence);
     }
 
     enum StartingPosition {
