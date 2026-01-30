@@ -40,7 +40,7 @@ public class InternalPosition {
 
     public static double getTurretAngle(Pose robot) {
         Pose g = goal();
-        return Math.atan2(g.getY() - robot.getY(), g.getX() - robot.getX()) - robot.getHeading();
+        return Math.toDegrees(Math.atan2(g.getY() - robot.getY(), g.getX() - robot.getX()) - robot.getHeading());
     }
 
     public static Pose goal() {

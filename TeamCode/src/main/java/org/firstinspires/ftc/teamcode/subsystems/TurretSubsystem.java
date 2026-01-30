@@ -75,6 +75,13 @@ public class TurretSubsystem extends SubsystemBase {
         if (Double.isNaN(angle)) {
             return;
         }
+
+        angle = MathFunctions.normalizeAngle(angle);
+
+        if (angle >= 270) {
+            angle -= 360;
+        }
+
         angle = Range.clip(angle, minAngle, maxAngle);
         servo1.setPosition(scale(angle));
         servo2.setPosition(scale(angle));

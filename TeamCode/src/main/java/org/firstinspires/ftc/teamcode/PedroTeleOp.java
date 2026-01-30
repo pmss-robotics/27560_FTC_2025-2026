@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.pedropathing.geometry.Pose;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.ParallelCommandGroup;
@@ -24,6 +25,7 @@ import org.firstinspires.ftc.teamcode.subsystems.PedroDriveSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.OuttakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.PedroDriveSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.TurretLimelightSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.TurretSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.TurretVisionSubsystem;
 import org.firstinspires.ftc.teamcode.util.InternalPosition;
@@ -39,7 +41,7 @@ public class PedroTeleOp extends CommandOpMode{
     IntakeSubsystem intake;
     OuttakeSubsystem outtake;
     TurretSubsystem turret;
-
+    TurretLimelightSubsystem limelight;
 
     TurretVisionSubsystem turretVision;
     LoopTimer timer;
@@ -63,11 +65,12 @@ public class PedroTeleOp extends CommandOpMode{
             timer = new LoopTimer(telemetry, "Main");
         }
 
+        /*
         try {
             turretVision = new TurretVisionSubsystem(hardwareMap, telemetry, false);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
-        }
+        }*/
 
         //turretVision.enableDetection(true);
 
@@ -81,16 +84,17 @@ public class PedroTeleOp extends CommandOpMode{
 
         positionCalc = new InternalPosition(drive::getPose, turret::getAngle);
 
+        limelight = new TurretLimelightSubsystem(hardwareMap, telemetry, drive.follower, turret);
+
         outtake.setDefaultCommand(new RunCommand(outtake::holdSpeed, outtake));
         intake.setDefaultCommand(new RunCommand(() ->intake.setPower(driver2.getLeftY()*12), intake));
 
         turret.setDefaultCommand(new RunCommand(
-                () -> turret.turnTo(turretVision.update(), () -> !driver2.gamepad.right_stick_button), turret, turretVision)
+                () -> turret.turn(InternalPosition.getTurretAngle(drive.getPose())), turret)
         );
 
 
 
-        //drive.follower.setTeleOpDrive();
         // Drive
         PedroDriveCommand driveCommand = new PedroDriveCommand(drive,
                 () -> -driver1.getLeftX() * driveMult,
@@ -112,7 +116,7 @@ public class PedroTeleOp extends CommandOpMode{
 
         // Position reset
         new GamepadButton(driver1, GamepadKeys.Button.A)
-                .whenPressed(new InstantCommand(() -> drive.follower.setPose(new Pose(0,0, Math.toRadians(90)))));
+                .whenReleased(new InstantCommand(() -> drive.follower.setPose(new Pose(0,0, Math.toRadians(90)))));
 
 
         // Drive Speed Toggle

@@ -36,21 +36,25 @@ public class HoodSubsystem extends SubsystemBase {
     }
     private double[] scale(double angle) {
 
+
         angle = clamp(angle, minAngle, maxAngle);
+
+        angle = Range.scale(angle, minAngle, maxAngle, 0, maxAngle-minAngle);
 
         // Hood angle - an angle between 30-48 degrees
         // Actual angle / Gear Ratio = Servo angle
 
         double servoside = angle / gearRatio;
 
-        Range.scale(angle/gearRatio, 0, 300, 0, 1);
+        Range.scale(servoside, 0, 300, 0, 1);
 
         /*
         double left = Range.scale(angle, minAngle, maxAngle, leftMin, leftMax);
         double right = Range.scale(angle, minAngle, maxAngle, rightMin, rightMax);
         */
 
-        double left,right;
+        double left = Range.scale(servoside, 0, 300, 0, 1);
+        double right = Range.scale(servoside, 0, 300, 1, 0);
 
         return new double[]{0, 0};
     }
