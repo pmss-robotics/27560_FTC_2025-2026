@@ -17,6 +17,7 @@ import org.firstinspires.ftc.teamcode.util.LoopTimer;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @Config
 @TeleOp(name = "Flywheel Tuner", group = "Testing")
@@ -55,10 +56,10 @@ public class FlywheelTuner extends CommandOpMode {
         incrementIndex = 0;
         increments = Arrays.asList(10.0, 1.0, 0.1, 0.01, 0.001);
 
-        mode = telemetry.addData("Mode", "%s %f", modes.get(modeIndex), increments.get(incrementIndex));
-        pidf = telemetry.addData("PIDF","P %f I %f D %f F %f", OuttakeSubsystem.P, OuttakeSubsystem.I, OuttakeSubsystem.D, OuttakeSubsystem.F);
-        target = telemetry.addData("target", outtake.targetRpm);
-        speed = telemetry.addData("measured", outtake.speed);
+        telemetry.addData("Mode", "%s %f", modes.get(modeIndex), increments.get(incrementIndex));
+        telemetry.addData("PIDF","P %f I %f D %f F %f", OuttakeSubsystem.P, OuttakeSubsystem.I, OuttakeSubsystem.D, OuttakeSubsystem.F);
+        telemetry.addData("target", outtake.targetRpm);
+        telemetry.addData("measured", outtake.speed);
 
         // Increment the pidf (DPAD l/r) Change size of increment (DPAD up/down)
         driver2.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(
@@ -136,11 +137,11 @@ public class FlywheelTuner extends CommandOpMode {
 
 
         schedule(new RunCommand(() -> {
-                    mode.setValue("%s %f", modes.get(modeIndex), increments.get(incrementIndex));
-                    pidf.setValue("P %f I %f D %f F %f", OuttakeSubsystem.P, OuttakeSubsystem.I, OuttakeSubsystem.D, OuttakeSubsystem.F);
-                    target.setValue(outtake.targetRpm);
-                    speed.setValue(outtake.speed);
-                })
-        );
+                telemetry.addData("Mode", "%s %f", modes.get(modeIndex), increments.get(incrementIndex));
+                telemetry.addData("PIDF","P %f I %f D %f F %f", OuttakeSubsystem.P, OuttakeSubsystem.I, OuttakeSubsystem.D, OuttakeSubsystem.F);
+                telemetry.addData("target", outtake.targetRpm);
+                telemetry.addData("measured", outtake.speed);
+                telemetry.update();
+        }));
     }
 }

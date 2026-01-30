@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
-import static com.acmerobotics.roadrunner.Math.clamp;
+import static com.seattlesolvers.solverslib.util.MathUtils.clamp;
 
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.DcMotor;

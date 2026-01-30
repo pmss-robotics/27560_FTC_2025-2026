@@ -5,6 +5,7 @@ import static com.seattlesolvers.solverslib.util.MathUtils.clamp;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.bylazar.lights.RGBIndicator;
+import com.bylazar.utils.MovingAverageSmoother;
 import com.qualcomm.robotcore.hardware.Light;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 import com.seattlesolvers.solverslib.controller.PIDFController;
@@ -30,10 +31,11 @@ import org.firstinspires.ftc.teamcode.util.States;
 
 @Config
 public class OuttakeSubsystem extends SubsystemBase {
-    private DcMotorEx flywheel;
+    private DcMotorEx flywheel1, flywheel2;
     private ServoImplEx leftKicker, rightKicker, light;
     private Telemetry telemetry;
     private VoltageSensor voltageSensor;
+    private MovingAverageSmoother smoother;
 
     public States.Flywheel flywheelState;
     public States.Kicker kickerState;
@@ -41,15 +43,18 @@ public class OuttakeSubsystem extends SubsystemBase {
     private InterpLUT lut;
     public static double flywheelMaxCurrent = 7, flywheelStallTimeout = 3000;
     public static double farShot = 3600, closeShot = 2920;
-    public static double P = 29.0, I=0, D=0.2, F=14;
+    public static double P = 29.0, I=0, D=0.2, F=14, encoderSign = -1;
+    public static int windowSize = 20;
     private static final double TICKS_PER_REV = 28.0;
     private static final double MAX_RPM = 6000.0;
     public double targetRpm = 0.0;
 
 
     private PIDFController pidf;
-    public static double lHome = 210, lKick = 100, rHome = 45, rKick = 155;
+    public static double lHome = 300, lKick = 100, rHome = 0, rKick = 155;
     public double speed;
+    private double lastPosition, position;
+    private ElapsedTime velocityTimer;
     private StallTimer stallTimer;
 
     /**
@@ -61,7 +66,8 @@ public class OuttakeSubsystem extends SubsystemBase {
     public OuttakeSubsystem(HardwareMap hardwareMap, Telemetry telemetry, boolean useKicker) {
         this.telemetry = telemetry;
 
-        flywheel = hardwareMap.get(DcMotorEx.class, "flywheel");
+        flywheel1 = hardwareMap.get(DcMotorEx.class, "flywheel1");
+        flywheel2 = hardwareMap.get(DcMotorEx.class, "flywheel2");
 
         light = hardwareMap.get(ServoImplEx.class, "rgb");
 
@@ -70,11 +76,25 @@ public class OuttakeSubsystem extends SubsystemBase {
             rightKicker = hardwareMap.get(ServoImplEx.class, "rightKicker");
         }
 
-        flywheel.setDirection(DcMotorEx.Direction.REVERSE);
-        //flywheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        pidf = new PIDFController(P, I, D, F, 0, flywheel.getVelocity());
+        flywheel1.setDirection(DcMotorEx.Direction.REVERSE);
+        flywheel2.setDirection(DcMotorEx.Direction.REVERSE);
 
-        flywheel.setPower(pidf.calculate(flywheel.getVelocity()));
+        velocityTimer = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
+
+        //flywheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        pidf = new PIDFController(P, I, D, F, 0, 0);
+
+        smoother = new MovingAverageSmoother(windowSize);
+
+        smoother.addValue(0);
+        smoother.addValue(0);
+
+
+        lastPosition = 0;
+        position = 0;
+
+        setPowers(0);
+
         // createLut();
 
         stallTimer = new StallTimer(flywheelStallTimeout, ElapsedTime.Resolution.MILLISECONDS);
@@ -102,8 +122,8 @@ public class OuttakeSubsystem extends SubsystemBase {
     }
 
     public void holdSpeed() {
-        speed = flywheel.getVelocity();
-        flywheel.setPower(clamp(pidf.calculate(speed)/voltageSensor.getVoltage(),-1,1));
+        setPowers(pidf.calculate(getVelocity())/voltageSensor.getVoltage());
+
 
         //telemetry.addData("flywheel voltage", speed);
         //telemetry.addData("flywheel current", flywheel.getCurrent(CurrentUnit.AMPS));
@@ -142,8 +162,26 @@ public class OuttakeSubsystem extends SubsystemBase {
         targetRpm = rpm;
         double ticksPerSec = (rpm * TICKS_PER_REV) / 60.0;
         pidf.setSetPoint(ticksPerSec);
-        speed = flywheel.getVelocity();
-        flywheel.setPower(clamp(pidf.calculate(speed)/voltageSensor.getVoltage(),-1,1));
+
+        setPowers(pidf.calculate(getVelocityTicks())/voltageSensor.getVoltage());
+    }
+
+    private double getVelocityTicks() {
+        double vel = flywheel1.getVelocity();
+        speed = encoderSign * flywheel1.getVelocity() * 60 / TICKS_PER_REV;
+        return flywheel1.getVelocity();
+    }
+
+    public double getVelocity() {
+        getVelocityTicks(); // Updates speed internally
+        return speed;
+    }
+
+    private void setPowers(double power) {
+        power = clamp(power, -1, 1);
+
+        flywheel1.setPower(power);
+        flywheel2.setPower(power);
     }
     public void setVelocityByDistance(double distance) {
         setVelocityRpm(lut.get(distance));
@@ -162,7 +200,8 @@ public class OuttakeSubsystem extends SubsystemBase {
 
     public void resetMotor() {
         stallTimer.motorOn();
-        flywheel.setMotorEnable();
+        flywheel1.setMotorEnable();
+        flywheel2.setMotorEnable();
     }
 
     private double scale(double angle){

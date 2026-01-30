@@ -7,6 +7,8 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
+import com.pedropathing.localization.Localizer;
+import com.pedropathing.math.Vector;
 import com.pedropathing.paths.PathChain;
 import com.seattlesolvers.solverslib.command.Command;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
@@ -17,6 +19,7 @@ import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.command.WaitCommand;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.seattlesolvers.solverslib.kinematics.wpilibkinematics.ChassisSpeeds;
 import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
 import com.skeletonarmy.marrow.prompts.OptionPrompt;
 import com.skeletonarmy.marrow.prompts.Prompter;
@@ -36,8 +39,8 @@ import org.firstinspires.ftc.teamcode.util.StateTransfer;
 import org.firstinspires.ftc.teamcode.util.States;
 
 
-@Autonomous(name = "Preload Auto", group = "Auto")
-public class PreloadAuto extends CommandOpMode {
+@Autonomous(name = "12 Ball Auto", group = "Auto")
+public class TwelveBallAuto extends CommandOpMode {
 
     PedroDriveSubsystem drive;
     OuttakeSubsystem outtake;
@@ -58,7 +61,6 @@ public class PreloadAuto extends CommandOpMode {
         if (Settings.get("loop_detect_mode", false)) {
             timer = new LoopTimer(telemetry, "Main");
         }
-
         outtake = new OuttakeSubsystem(hardwareMap, telemetry, true);
         intake = new IntakeSubsystem(hardwareMap, telemetry);
         turret = new TurretSubsystem(hardwareMap, telemetry);
@@ -71,7 +73,6 @@ public class PreloadAuto extends CommandOpMode {
         prompter.prompt("alliance", new OptionPrompt<>("Select Alliance", States.Alliance.Red, States.Alliance.Blue))
                 .prompt("startPosition", new OptionPrompt<>("Starting Position", StartingPosition.goalSide, StartingPosition.farSide))
                 .onComplete(this::createPaths);
-
 
         prompter.run();
     }
@@ -128,7 +129,7 @@ public class PreloadAuto extends CommandOpMode {
                 new InstantCommand(() -> outtake.setVelocityRpm(2900), outtake),
                 new InstantCommand(() -> turret.turn(InternalPosition.getTurretAngle(shootPose))),
 
-                 // Drive to the shooting position
+                // Drive to the shooting position
 
                 new ConditionalCommand(
                         new FollowPathCommand(drive.follower, path1), //Drive
