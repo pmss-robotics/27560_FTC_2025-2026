@@ -28,7 +28,7 @@ public class States {
 
     public enum Kicker {
         home,
-        kick
+        neutral, kick
     }
 
     public enum Intake {

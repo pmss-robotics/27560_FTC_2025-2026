@@ -18,7 +18,7 @@ public class MacroCommands {
                 //new InstantCommand(() -> outtake.setPower(OuttakeSubsystem.flywheelVelocity), outtake),
                 //new WaitCommand(initialFlywheelSpinUp),
 
-                new InstantCommand(() -> intake.setPower(12), intake),
+                /*new InstantCommand(() -> intake.setPower(12), intake),
                 new WaitCommand(intakeFeedTime),
                 new InstantCommand(() -> intake.setPower(0), intake),
                 new WaitCommand(spinUp),
@@ -30,7 +30,15 @@ public class MacroCommands {
 
                 MacroCommands.kickSequence(outtake)
 
-                //new InstantCommand(() -> outtake.setPower(0), outtake)
+                //new InstantCommand(() -> outtake.setPower(0), outtake)*/
+
+                new InstantCommand(outtake::neutral),
+                new InstantCommand(() -> intake.setPower(12), intake),
+                new WaitCommand(3000),
+                new InstantCommand(outtake::kick),
+                new WaitCommand(600),
+                new InstantCommand(outtake::home)
+
         );
     }
     public static Command kickSequence(OuttakeSubsystem outtake) {

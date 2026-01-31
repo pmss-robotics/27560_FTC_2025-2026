@@ -54,7 +54,7 @@ public class OuttakeSubsystem extends SubsystemBase {
 
 
     private PIDFController pidf;
-    public static double lHome = 300, lKick = 100, rHome = 0, rKick = 155;
+    public static double lHome = 300, lKick = 100, lNeutral = 300, rHome = 0, rKick = 155, rNeutral = 0;
     public double speed;
     private double lastPosition, position;
     private ElapsedTime velocityTimer;
@@ -214,6 +214,12 @@ public class OuttakeSubsystem extends SubsystemBase {
         kickerState = States.Kicker.home;
         leftKicker.setPosition(scale(lHome));
         rightKicker.setPosition(scale(rHome));
+    }
+
+    public void neutral(){
+        kickerState = States.Kicker.neutral;
+        leftKicker.setPosition(scale(lNeutral));
+        rightKicker.setPosition(scale(rNeutral));
     }
 
     public void resetMotor() {
